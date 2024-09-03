@@ -1,3 +1,4 @@
+// components/dashboard.tsx
 "use client";
 import { useState, ReactNode, useEffect } from "react";
 

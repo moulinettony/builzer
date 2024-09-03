@@ -1,39 +1,52 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
-import fs from 'fs';
-import path from 'path';
+import type { NextApiRequest, NextApiResponse } from "next";
+import { supabase } from "../../app/utils/supabaseClient";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'POST') {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+  if (req.method === "POST") {
     try {
       const { title, sublink, titleSize, buttonSize } = req.body;
 
       // Validate input
-      if (typeof title !== 'string' || typeof sublink !== 'string' ||
-          typeof titleSize !== 'string' || typeof buttonSize !== 'string') {
-        return res.status(400).json({ message: 'Invalid data' });
+      if (
+        typeof title !== "string" ||
+        typeof sublink !== "string" ||
+        typeof titleSize !== "string" ||
+        typeof buttonSize !== "string"
+      ) {
+        return res.status(400).json({ message: "Invalid data" });
       }
 
-      // Define the path to the data.json file
-      const filePath = path.join(process.cwd(), 'public', 'data.json');
+      const existingId = 1; // Replace with the actual ID of the row you want to update
 
-      // Log file path and data for debugging
-      console.log('File path:', filePath);
-      console.log('Data to save:', { title, sublink, titleSize, buttonSize });
+      const { data, error } = await supabase
+        .from("content")
+        .upsert([{ id: existingId, title, sublink, titleSize, buttonSize }], {
+          onConflict: "id",
+        });
 
-      // Write the data to the JSON file
-      fs.writeFileSync(filePath, JSON.stringify({ title, sublink, titleSize, buttonSize }, null, 2));
-
-      res.status(200).json({ message: 'Content saved successfully' });
-    } catch (error) {
-      // Type guard to handle error messages safely
-      if (error instanceof Error) {
-        console.error('Error saving content:', error.message); // Log specific error message
+      if (error) {
+        console.error("Error upserting data:", error.message);
       } else {
-        console.error('Error saving content:', error); // Fallback log if error is not an instance of Error
+        console.log("Data upserted successfully:", data);
       }
-      res.status(500).json({ message: 'Internal Server Error', error });
+
+      res.status(200).json({ message: "Content saved successfully" });
+    } catch (error) {
+      console.error("Error in API handler:", error); // Log general error details
+      if (error instanceof Error) {
+        res
+          .status(500)
+          .json({ message: "Internal Server Error", error: error.message });
+      } else {
+        res
+          .status(500)
+          .json({ message: "Internal Server Error", error: "Unknown error" });
+      }
     }
   } else {
-    res.status(405).json({ message: 'Method not allowed' });
+    res.status(405).json({ message: "Method not allowed" });
   }
 }
