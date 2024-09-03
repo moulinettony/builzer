@@ -25,7 +25,12 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 
       res.status(200).json({ message: 'Content saved successfully' });
     } catch (error) {
-      console.error('Error saving content:', error);
+      // Type guard to handle error messages safely
+      if (error instanceof Error) {
+        console.error('Error saving content:', error.message); // Log specific error message
+      } else {
+        console.error('Error saving content:', error); // Fallback log if error is not an instance of Error
+      }
       res.status(500).json({ message: 'Internal Server Error' });
     }
   } else {
