@@ -1,30 +1,9 @@
-// app/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import OtherLayout from "../components/dashboard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { supabase } from './utils/supabaseClient'; 
 import "./globals.css";
-
-export async function fetchContent() {
-  try {
-    const { data, error } = await supabase
-      .from('content')
-      .select('*')
-      .single(); // Assuming you expect only one row
-
-    if (error) {
-      console.error('Error fetching content:', error);
-      throw new Error('Failed to fetch data');
-    }
-
-    console.log('Fetched content:', data); // Log the fetched data
-    return data;
-  } catch (error) {
-    console.error('Error in fetchContent function:', error);
-    throw error;
-  }
-}
 
 export default function HomePage() {
   const [title, setTitle] = useState<string>("");
@@ -40,7 +19,16 @@ export default function HomePage() {
   useEffect(() => {
     const loadData = async () => {
       try {
-        const data = await fetchContent();
+        const { data, error } = await supabase
+          .from('content')
+          .select('*')
+          .single(); // Assuming you expect only one row
+
+        if (error) {
+          console.error('Error fetching content:', error);
+          throw new Error('Failed to fetch data');
+        }
+
         if (data) {
           setTitle(data.title || "Default Title");
           setLink(data.sublink || "Default Link");
@@ -143,7 +131,6 @@ export default function HomePage() {
           </a>
         </div>
       </div>
-      
     </OtherLayout>
   );
 }
