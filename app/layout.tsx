@@ -12,9 +12,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     const sublink = localStorage.getItem("sublink");
     const titleSize = localStorage.getItem("titleSize") || "text-4xl";
     const buttonSize = localStorage.getItem("buttonSize") || "text-4xl";
-
+  
     console.log('Saving content:', { title, sublink, titleSize, buttonSize });
-
+  
     try {
       const res = await fetch('/api/saveContent', {
         method: 'POST',
@@ -23,7 +23,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         },
         body: JSON.stringify({ title, sublink, titleSize, buttonSize }),
       });
-
+  
       if (res.ok) {
         console.log('Content saved successfully');
         setShowPopup(true); 
@@ -36,7 +36,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }, 700); 
         }, 1500);
       } else {
-        console.error('Failed to save content');
+        // Log the error message returned from the API
+        const errorData = await res.json(); // Get the error message from response
+        console.error('Failed to save content:', errorData); // Log the error response
       }
     } catch (error) {
       console.error('Error saving content:', error);
