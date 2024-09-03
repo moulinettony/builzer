@@ -31,7 +31,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       } else {
         console.error('Error saving content:', error); // Fallback log if error is not an instance of Error
       }
-      res.status(500).json({ message: 'Internal Server Error' });
+      res.status(500).json({ message: 'Internal Server Error', error });
     }
   } else {
     res.status(405).json({ message: 'Method not allowed' });
