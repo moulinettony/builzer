@@ -48,9 +48,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="h-screen flex flex-col">
-        <nav className="bg-white text-[#303030] py-4 shadow z-[9]">
+        <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
           <div className="flex items-center justify-center">
-            <div className="w-[10%]"></div>
+            <div className="w-[10%] text-center">
+              <img src="/logo.svg" alt="" />
+            </div>
             <div className="w-[80%] flex items-center justify-center gap-6">
               <a className="font-semibold" href="">
                 Default
@@ -60,7 +62,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 Home Page
               </a>
             </div>
-            <div className="w-[10%] text-center">
+            <div className="w-[10%] text-right">
               <button
                 onClick={handleSave}
                 className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
