@@ -1,6 +1,5 @@
 // components/dashboard.tsx
-"use client";
-import { useState, ReactNode, useEffect } from "react";
+import { useState, useEffect, ReactNode } from "react";
 
 interface Section {
   label: string;
@@ -10,6 +9,7 @@ interface Section {
 interface OtherLayoutProps {
   children: ReactNode;
   sections: Section[];
+  headerSections: Section[];
   onContentChange: (
     label: string,
     newContent: string,
@@ -19,8 +19,12 @@ interface OtherLayoutProps {
   isSaveEnabled: boolean;
   editLabel: string | null;
   onEditClick: (label: string) => void;
-  titleSize: string; // Add this line
-  buttonSize: string; // Add this line
+  titleSize: string;
+  buttonSize: string;
+  navLinkSize1: string;
+  navLinkSize2: string;
+  editImageLabel: string | null;
+  onEditImageClick: (label: string) => void;
 }
 
 const AccordionSection = ({
@@ -36,7 +40,9 @@ const AccordionSection = ({
 }) => (
   <div>
     <div
-      className={`cursor-pointer hover:bg-neutral-200 px-4 py-3 ${isOpen ? "bg-neutral-100" : ""}`}
+      className={`cursor-pointer hover:bg-neutral-200 px-4 py-3 ${
+        isOpen ? "bg-neutral-100" : ""
+      }`}
       onClick={onToggle}
     >
       {label}
@@ -48,37 +54,57 @@ const AccordionSection = ({
 export default function OtherLayout({
   children,
   sections,
+  headerSections,
   onContentChange,
-  onSave,
-  isSaveEnabled,
   editLabel,
   onEditClick,
   titleSize,
-  buttonSize, // Destructure these props
+  buttonSize,
+  navLinkSize1,
+  navLinkSize2,
+  editImageLabel,
+  onEditImageClick,
 }: OtherLayoutProps) {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string | null>(null);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-
-  const handleAccordionClick = (index: number) => {
-    setActiveIndex(activeIndex === index ? null : index);
-  };
+  const [activeHeaderIndex, setActiveHeaderIndex] = useState<number | null>(
+    null
+  );
+  const [isSidebarVisible, setIsSidebarVisible] = useState(false);
+  const [isImageSidebarVisible, setIsImageSidebarVisible] = useState(false);
+  const [editImage, setEditImage] = useState(false);
+  const [logoImage, setLogoImage] = useState<string>("/wow.svg");
 
   useEffect(() => {
     if (editLabel) {
-      const section = sections.find((sec) => sec.label === editLabel);
+      const section = [...sections, ...headerSections].find(
+        (sec) => sec.label === editLabel
+      );
       if (section) {
         setSelectedContent(section.content);
         setEditContent(section.content);
         setSelectedLabel(editLabel);
+        setIsSidebarVisible(true);
+        setIsImageSidebarVisible(false);
+        setEditImage(false);
       }
+    } else if (editImageLabel) {
+      setEditImage(true);
+      setSelectedLabel(editImageLabel);
+      setIsSidebarVisible(false);
+      setIsImageSidebarVisible(true);
+      setEditContent(null);
     } else {
       setSelectedContent(null);
       setEditContent(null);
       setSelectedLabel(null);
+      setIsSidebarVisible(false);
+      setIsImageSidebarVisible(false);
+      setEditImage(false);
     }
-  }, [editLabel, sections]);
+  }, [editLabel, editImageLabel, sections, headerSections]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newContent = event.target.value;
@@ -88,27 +114,85 @@ export default function OtherLayout({
       onContentChange(selectedLabel, newContent);
     }
   };
+
   const handleSizeChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const newSize = event.target.value;
     if (selectedLabel) {
       onContentChange(selectedLabel, editContent || "", newSize);
     }
   };
+
+  const handleImageUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      try {
+        const response = await fetch("/api/uploadImage", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          let newImageUrl = data.imageUrl;
+          console.log('zzzz',data.imageUrl)
+
+          // Force reload the image by appending a timestamp query parameter
+          newImageUrl += `?t=${new Date().getTime()}`;
+
+          // Update the state with the new image URL
+          setLogoImage(newImageUrl);
+        } else {
+          console.error("Image upload failed");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
+    }
+  };
+
   return (
     <div className="h-full flex flex-1">
       <div className="w-[55px] bg-white h-full border-r"></div>
-      <aside className="bg-white text-[#303030] w-1/5">
+      <aside className="bg-white text-[#303030] w-[250px]">
         <h2 className="border-b px-4 font-semibold py-4">Home page</h2>
+        <AccordionSection
+          label="Header"
+          isOpen={activeHeaderIndex === 0}
+          onToggle={() =>
+            setActiveHeaderIndex(activeHeaderIndex === 0 ? null : 0)
+          }
+        >
+          {headerSections.map((section, index) => (
+            <div
+              key={index}
+              className="cursor-pointer hover:bg-neutral-100 px-4 py-1 my-2 rounded-lg bg-white"
+              onClick={() => onEditClick(section.label)}
+            >
+              {section.label}
+            </div>
+          ))}
+        </AccordionSection>
         <AccordionSection
           label="Section"
           isOpen={activeIndex === 0}
-          onToggle={() => handleAccordionClick(0)}
+          onToggle={() => setActiveIndex(activeIndex === 0 ? null : 0)}
         >
           {sections.map((section, index) => (
             <div
               key={index}
               className="cursor-pointer hover:bg-neutral-100 px-4 py-1 my-2 rounded-lg bg-white"
-              onClick={() => onEditClick(section.label)} // Use onEditClick
+              onClick={() => {
+                if (section.label === "Image") {
+                  onEditImageClick(section.label); // Call handleImageClick if the section is "Image"
+                } else {
+                  onEditClick(section.label);
+                }
+              }}
             >
               {section.label}
             </div>
@@ -116,9 +200,13 @@ export default function OtherLayout({
         </AccordionSection>
       </aside>
       <main className="flex-1 p-2 bg-neutral-200">{children}</main>
-      <aside className="bg-white w-1/6">
+      <aside
+        className={`bg-white w-[250px] ${
+          isSidebarVisible ? "block" : "hidden"
+        } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
+      >
         <div className="h-content px-4 py-4 border-b">
-          {editContent !== null ? (
+          {editContent !== null && !editImage ? (
             <div className="mb-5">
               <h2 className="font-semibold text-[#303030] pb-4 mb-6">
                 Heading
@@ -136,7 +224,17 @@ export default function OtherLayout({
                 Heading size
               </label>
               <select
-                value={selectedLabel === "Title" ? titleSize : buttonSize}
+                value={
+                  selectedLabel === "Title"
+                    ? titleSize
+                    : selectedLabel === "Button"
+                    ? buttonSize
+                    : selectedLabel === "NavLink1"
+                    ? navLinkSize1
+                    : selectedLabel === "NavLink2"
+                    ? navLinkSize2
+                    : ""
+                }
                 onChange={handleSizeChange}
                 className="w-full p-3 hover:bg-neutral-100 border-l border-r border-b rounded-t-none rounded-lg"
               >
@@ -146,8 +244,20 @@ export default function OtherLayout({
                 <option value="text-6xl">Extra Large</option>
               </select>
             </div>
+          ) : editImage ? (
+            <div className="mb-5">
+              <h2 className="font-semibold text-[#303030] pb-4 mb-6">
+                Edit Image
+              </h2>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="w-full p-3 border border-dashed rounded-lg"
+              />
+            </div>
           ) : (
-            <div className="">
+            <div>
               <h2 className="font-semibold text-[#303030]">
                 Customize your templates
               </h2>
