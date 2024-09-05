@@ -172,7 +172,7 @@ export default function OtherLayout({
   return (
     <div className="h-full flex flex-1">
       <div className="w-[55px] bg-white h-full border-r"></div>
-      <aside className="bg-white text-[#303030] w-[250px]">
+      <aside className="bg-white text-[#303030] w-[300px]">
         <h2 className="border-b px-4 font-semibold py-4">Home page</h2>
         <div className="px-4">
           <h3 className="font-semibold text-[14px] py-4">Header</h3>
@@ -218,7 +218,7 @@ export default function OtherLayout({
       </aside>
       <main className="flex-1 p-2 bg-neutral-200">{children}</main>
       <aside
-        className={`bg-white w-[250px] ${
+        className={`bg-white w-[350px] ${
           isSidebarVisible ? "block" : "hidden"
         } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
       >
