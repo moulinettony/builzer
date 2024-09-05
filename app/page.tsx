@@ -75,15 +75,15 @@ export default function HomePage() {
       if (newSize) setButtonSize(newSize);
       localStorage.setItem("sublink", newContent);
       localStorage.setItem("buttonSize", newSize || buttonSize);
-    } else if (label === "NavLink1") {
+    } else if (label === "Home") {
       setNavLink1(newContent);
       if (newSize) setNavLinkSize1(newSize);
-      localStorage.setItem("navLink1", newContent);
+      localStorage.setItem("Home", newContent);
       localStorage.setItem("navLinkSize1", newSize || navLinkSize1);
-    } else if (label === "NavLink2") {
+    } else if (label === "Default") {
       setNavLink2(newContent);
       if (newSize) setNavLinkSize2(newSize);
-      localStorage.setItem("navLink2", newContent);
+      localStorage.setItem("Default", newContent);
       localStorage.setItem("navLinkSize2", newSize || navLinkSize2);
     } else if (label === "NavLinkUrl1") {
       setNavLinkUrl1(newContent);
@@ -147,11 +147,10 @@ export default function HomePage() {
   return (
     <OtherLayout
       headerSections={[
-        { label: "NavLink1", content: navLink1 },
-        { label: "NavLink2", content: navLink2 },
+        { label: "Home", content: navLink1 },
+        { label: "Default", content: navLink2 },
       ]}
       sections={[
-        { label: "Image", content: logoImage },
         { label: "Title", content: title },
         { label: "Button", content: sublink },
       ]}
@@ -168,7 +167,7 @@ export default function HomePage() {
       navLinkSize2={navLinkSize2}
     >
       {loading && <LoadingSpinner />}
-      <nav className="bg-white px-12 container text-[#303030] py-4 shadow z-[9]">
+      <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
         <div className="flex items-center justify-center">
           <div className="w-[20%] text-center">
             <img
@@ -184,7 +183,7 @@ export default function HomePage() {
               href="#"
               onClick={(event) => {
                 event.preventDefault(); // Prevent the default anchor behavior
-                handleEditClick("NavLink1");
+                handleEditClick("Home");
               }}
             >
               {navLink1}
@@ -194,7 +193,7 @@ export default function HomePage() {
               href="#"
               onClick={(event) => {
                 event.preventDefault(); // Prevent the default anchor behavior
-                handleEditClick("NavLink2");
+                handleEditClick("Default");
               }}
             >
               {navLink2}
