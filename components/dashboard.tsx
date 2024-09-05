@@ -214,7 +214,6 @@ export default function OtherLayout({
               </div>
             ))}
           </AccordionSection>
-          add
         </div>
       </aside>
       <main className="flex-1 p-2 bg-neutral-200">{children}</main>
