@@ -222,7 +222,6 @@ export default function HomePage() {
           >
             {title || "Loading Title..."}
           </h1>
-          {logoImage}
           <a
             className={`hover:outline outline-[3px] outline-blue-500 border-2 py-2 px-6 cursor-pointer ${buttonSize}`}
             href=""
