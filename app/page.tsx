@@ -174,7 +174,6 @@ export default function HomePage() {
               src="/wow.svg"
               alt="Logo"
               className="cursor-pointer"
-              onClick={() => handleImageClick("Logo")}
             />
           </div>
           <div className="w-[70%] flex gap-6">
@@ -206,15 +205,15 @@ export default function HomePage() {
           </div>
         </div>
       </nav>
-      <div className="bg-[url()] relative text-white">
+      <div className="relative text-white">
         <img
           src={logoImage}
           alt="Logo"
           className="h-full w-full absolute cursor-pointer object-cover"
           onClick={() => handleImageClick("Logo")}
         />
-        <div className="h-full w-full bg-black absolute opacity-20"></div>
-        <div className="flex min-h-[40vh] relative gap-6 flex-col justify-center items-center z-2 p-10">
+        <div className="h-full w-full bg-black absolute opacity-40"></div>
+        <div className="flex min-h-[70vh] relative gap-6 flex-col justify-center items-center z-2 p-10">
           <h1
             className={`hover:outline outline-[3px] outline-blue-500 text-center ${titleSize} font-semibold cursor-pointer`}
             onClick={() => handleEditClick("Title")}
@@ -222,7 +221,7 @@ export default function HomePage() {
             {title || "Loading Title..."}
           </h1>
           <a
-            className={`hover:outline outline-[3px] outline-blue-500 border-2 py-2 px-6 cursor-pointer ${buttonSize}`}
+            className={`hover:outline outline-[3px] outline-blue-500 border py-2 px-6 cursor-pointer ${buttonSize}`}
             href=""
             onClick={(event) => {
               event.preventDefault();

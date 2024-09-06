@@ -54,11 +54,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <img src="/logo.svg" alt="" />
             </div>
             <div className="w-[80%] flex items-center justify-center gap-6">
-              <a className="font-semibold" href="">
+              <a className="font-semibold text-sm" href="">
                 Default
               </a>
               <div className="h-[1rem] w-[1px] bg-[#9f9f9f]"></div>
-              <a className="font-semibold" href="">
+              <a className="font-semibold text-sm" href="">
                 Home Page
               </a>
             </div>
