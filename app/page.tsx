@@ -143,7 +143,7 @@ export default function HomePage() {
     setEditImageLabel(label);
     setEditLabel(null);
   };
-  
+
   return (
     <OtherLayout
       headerSections={[
@@ -167,14 +167,10 @@ export default function HomePage() {
       navLinkSize2={navLinkSize2}
     >
       {loading && <LoadingSpinner />}
-      <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
+      <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
         <div className="flex items-center justify-center">
           <div className="w-[20%] text-center">
-            <img
-              src="/wow.svg"
-              alt="Logo"
-              className="cursor-pointer"
-            />
+            <img src="/wow.svg" alt="Logo" className="cursor-pointer" />
           </div>
           <div className="w-[70%] flex gap-6">
             <a
@@ -232,6 +228,30 @@ export default function HomePage() {
           </a>
         </div>
       </div>
+      <footer className="bg-white py-10 rounded-b-lg">
+        <div className="flex text-lg gap-6 flex-col items-center border-b pb-12">
+          <p>Subsribe to our emails</p>
+          <form className="relative w-[300px]">
+            <button
+              className="absolute text-neutral-500 inset-y-0 right-3 flex items-center"
+            >
+              →
+            </button>
+            <input
+              type="text"
+              placeholder="Email"
+              className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-4 hover:outline outline-1"
+            />
+          </form>
+        </div>
+        <div className="flex gap-1 px-12 mt-14">
+          <p className="text-xs opacity-60">© 2024,</p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">My Store</p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">Powered by Shopify</p>
+          <p className="text-xs mx-2 opacity-60">.</p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">Powered by Shopify</p>
+        </div>
+      </footer>
     </OtherLayout>
   );
 }

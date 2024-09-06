@@ -64,6 +64,9 @@ const AccordionSection = ({
         {label === "Header" && (
           <img className="" src="header.svg" alt="imglogo" />
         )}
+        {label === "Footer" && (
+          <img className="rotate-[180deg]" src="header.svg" alt="imglogo" />
+        )}
         <p>{label}</p>
       </div>
       {isOpen && <div className="pl-5">{children}</div>}
@@ -88,7 +91,7 @@ export default function OtherLayout({
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string | null>(null);
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
-  const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [activeIndex, setActiveIndex] = useState<number | null>(0);
   const [activeHeaderIndex, setActiveHeaderIndex] = useState<number | null>(
     null
   );
@@ -99,6 +102,9 @@ export default function OtherLayout({
   const [value, setValue] = useState(40);
   const [selectedButton, setSelectedButton] = useState<number>(1);
   const [selectedButtontab, setSelectedButtontab] = useState<number>(1);
+  const [secondAccordionIndex, setSecondAccordionIndex] = useState<
+    number | null
+  >(null);
 
   const handleTabClick = (index: number) => {
     setSelectedButtontab(index);
@@ -120,7 +126,7 @@ export default function OtherLayout({
     } else if (editImageLabel) {
       setEditImage(true);
       setSelectedLabel(editImageLabel);
-      setIsSidebarVisible(false);
+      setIsSidebarVisible(true);
       setIsImageSidebarVisible(true);
       setEditContent(null);
     } else {
@@ -195,24 +201,24 @@ export default function OtherLayout({
         <div className="flex flex-col items-center">
           <button
             onClick={() => handleTabClick(1)}
-            className={`p-3 mt-3 rounded-lg ${
-              selectedButtontab === 1 ? "bg-gray-100" : ""
+            className={`p-3 mt-3 rounded-lg grayscale ${
+              selectedButtontab === 1 ? "bg-gray-100 grayscale-0" : ""
             }`}
           >
             <img src="/section.svg" alt="" />
           </button>
           <button
             onClick={() => handleTabClick(2)}
-            className={`p-3 my-3 rounded-lg ${
-              selectedButtontab === 2 ? "bg-gray-100" : ""
+            className={`p-3 my-3 rounded-lg grayscale ${
+              selectedButtontab === 2 ? "bg-gray-100 grayscale-0" : ""
             }`}
           >
             <img src="/settings.svg" alt="" />
           </button>
           <button
             onClick={() => handleTabClick(3)}
-            className={`p-3 rounded-lg ${
-              selectedButtontab === 3 ? "bg-gray-100" : ""
+            className={`p-3 rounded-lg grayscale ${
+              selectedButtontab === 3 ? "bg-gray-100 grayscale-0" : ""
             }`}
           >
             <img src="/apps.svg" alt="" />
@@ -260,8 +266,8 @@ export default function OtherLayout({
           <div className="px-4">
             <AccordionSection
               label="Image banner"
-              isOpen={activeIndex === 0}
-              onToggle={() => setActiveIndex(activeIndex === 0 ? null : 0)}
+              isOpen={activeIndex === 0} // This determines if the accordion is open
+              onToggle={() => setActiveIndex(activeIndex === 0 ? null : 0)} // Toggle between open and close
               onEditImageClick={onEditImageClick} // Pass this prop here
             >
               {sections.map((section, index) => (
@@ -292,6 +298,23 @@ export default function OtherLayout({
               <img src="add.svg" alt="svgimgs" />
               <p className="text-[14px] text-blue-600">Add Section</p>
             </div>
+          </div>
+          <h3 className="border-t mt-3 px-4 font-semibold text-[14px] py-4">
+            Footer
+          </h3>
+          <div className="px-4">
+            <AccordionSection
+              label="Footer"
+              isOpen={secondAccordionIndex === 1}
+              onToggle={() =>
+                setSecondAccordionIndex(secondAccordionIndex === 1 ? null : 1)
+              }
+            >
+              <div className="flex items-center px-6 gap-2 hover:bg-neutral-100 py-1 rounded-lg cursor-pointer">
+                <img src="/add.svg" alt="svgimgs" />
+                <p className="text-[14px] text-blue-600">Add Section</p>
+              </div>
+            </AccordionSection>
           </div>
         </aside>
       )}
@@ -433,7 +456,12 @@ export default function OtherLayout({
           </div>
         </aside>
       )}
-      <main className="flex-1 p-2 bg-neutral-200">{children}</main>
+      <main
+        className="flex-1 p-2 bg-neutral-200 overflow-y-scroll"
+        style={{ maxHeight: "calc(100vh - 64px)" }}
+      >
+        {children}
+      </main>
       {selectedButtontab === 1 && (
         <aside
           className={`bg-white w-[300px] overflow-y-scroll ${
