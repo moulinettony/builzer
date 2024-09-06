@@ -708,7 +708,7 @@ export default function OtherLayout({
                   <div className="px-4 pb-4">
                     <img
                       className="w-[24px] opacity-80 mb-6"
-                      src="/section.svg"
+                      src="/sectionblack.svg"
                       alt=""
                     />
                     <h2 className="font-semibold text-sm text-[#303030]">
