@@ -267,14 +267,26 @@ export default function OtherLayout({
             <AccordionSection
               label="Image banner"
               isOpen={activeIndex === 0} // This determines if the accordion is open
-              onToggle={() => setActiveIndex(activeIndex === 0 ? null : 0)} // Toggle between open and close
+              onToggle={() => {
+                if (activeIndex === 0) {
+                  setActiveIndex(null); // Close the accordion
+                  setIsSidebarVisible(false); // Hide the sidebar
+                } else {
+                  setActiveIndex(0); // Open the accordion
+                  setIsSidebarVisible(true); // Show the sidebar
+                }
+              }} // Toggle between open and close
               onEditImageClick={onEditImageClick} // Pass this prop here
             >
               {sections.map((section, index) => (
                 <div
                   key={index}
                   className="cursor-pointer hover:bg-neutral-100 text-[14px] flex items-center px-4 py-1 mt-2 rounded-lg bg-white"
-                  onClick={() => onEditClick(section.label)}
+                  onClick={() => {
+                    // Ensure the sidebar opens when this div is clicked
+                    setIsSidebarVisible(true);
+                    onEditClick(section.label); // Trigger any other functionality you need
+                  }}
                 >
                   {section.label === "Title" && (
                     <img
@@ -323,7 +335,7 @@ export default function OtherLayout({
           <h2 className="border-b px-4 font-semibold py-4">Theme settings</h2>
           <div
             className="overflow-y-scroll"
-            style={{ maxHeight: "calc(100vh - 64px)" }}
+            style={{ height: "calc(100vh - 64px)" }}
           >
             <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
               <p className="font-semibold text-sm">Logo</p>
@@ -458,7 +470,7 @@ export default function OtherLayout({
       )}
       <main
         className="flex-1 p-2 bg-neutral-200 overflow-y-scroll"
-        style={{ maxHeight: "calc(100vh - 64px)" }}
+        style={{ height: "calc(100vh - 64px)" }}
       >
         {children}
       </main>
@@ -467,12 +479,18 @@ export default function OtherLayout({
           className={`bg-white w-[300px] overflow-y-scroll ${
             isSidebarVisible ? "block" : "hidden"
           } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
-          style={{ maxHeight: "calc(100vh - 64px)" }}
+          style={{ height: "calc(100vh - 64px)" }}
         >
+          <button
+            onClick={() => setIsSidebarVisible(false)}
+            className="absolute top-[14px] leading-[0] h-[15px] rotate-[180deg] pb-[6px] pt-[3px] px-[7px] rounded-lg h-[26px] left-5 text-gray-500 text-lg hover:bg-gray-100"
+          >
+            ›
+          </button>
           <div className="py-4">
             {editContent !== null && !editImage ? (
               <div className="mb-5 px-5">
-                <h2 className="font-semibold text-[14px] text-[#303030] pb-4 mb-6">
+                <h2 className="font-semibold max-xl:ml-8 text-[14px] text-[#303030] pb-4 mb-6">
                   Heading
                 </h2>
                 <p className="text-[#303030] mb-2 text-sm">Heading</p>
@@ -528,7 +546,7 @@ export default function OtherLayout({
               </div>
             ) : editImage ? (
               <div className="mb-5 px-5">
-                <h2 className="font-semibold text-[14px] text-neutral-600 pb-4 mb-6">
+                <h2 className="font-semibold text-[14px] max-xl:ml-8 text-neutral-600 pb-4 mb-6">
                   Image banner
                 </h2>
                 <div className="flex w-full justify-between">
@@ -729,7 +747,7 @@ export default function OtherLayout({
           className={`bg-white w-[300px] overflow-y-scroll ${
             isSidebarVisible ? "block" : "hidden"
           } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
-          style={{ maxHeight: "calc(100vh - 64px)" }}
+          style={{ height: "calc(100vh - 64px)" }}
         >
           <div className="p-5">
             <img className="w-[40px] opacity-80 mb-3" src="/paint.svg" alt="" />
@@ -762,7 +780,7 @@ export default function OtherLayout({
           className={`bg-white w-[300px] overflow-y-scroll ${
             isSidebarVisible ? "block" : "hidden"
           } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
-          style={{ maxHeight: "calc(100vh - 64px)" }}
+          style={{ height: "calc(100vh - 64px)" }}
         >
           <div className="p-5 border-b">
             <img className="w-[40px] opacity-80 mb-3" src="/apps2.svg" alt="" />
