@@ -14,7 +14,8 @@
     "next": "14.2.7",
     "react": "^18",
     "react-dom": "^18",
-    "react-loading": "^2.0.3"
+    "react-loading": "^2.0.3",
+    "zustand": "^5.0.0-rc.2"
   },
   "devDependencies": {
     "@types/formidable": "^3.4.5",

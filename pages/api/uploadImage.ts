@@ -1,9 +1,8 @@
-// pages/api/uploadImage.ts
-import { NextApiRequest, NextApiResponse } from 'next';
-import formidable, { File } from 'formidable';
-import fs from 'fs/promises';
-import path from 'path';
-import { supabase } from "../../app/utils/supabaseClient";
+// api/uploadImage.ts
+import { NextApiRequest, NextApiResponse } from "next";
+import formidable, { File } from "formidable";
+import fs from "fs/promises";
+import { supabaseAdmin } from "../../app/utils/supabaseClient"; // Use supabaseAdmin for server-side operations
 
 export const config = {
   api: {
@@ -11,59 +10,72 @@ export const config = {
   },
 };
 
-const uploadDir = path.join(process.cwd(), 'public', 'uploads'); // Define the upload directory
-
 export default async function uploadImage(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Ensure the upload directory exists
-    await fs.mkdir(uploadDir, { recursive: true });
-
-    // Initialize formidable
-    const form = formidable({
-      multiples: false, // Only allow single file uploads
-      uploadDir, // Store uploads in the defined directory
-      filename: (name, ext, part) => {
-        return Date.now().toString() + '_' + part.originalFilename; // Unique filename
-      },
-    });
+    const form = formidable({ multiples: false });
 
     form.parse(req, async (err, fields, files) => {
       if (err) {
-        console.error('File upload error:', err);
+        console.error('Formidable parse error:', err);
         return res.status(500).json({ message: 'File upload failed' });
       }
 
-      const uploadedFile = files.file; // Access the uploaded file
+      const uploadedFile = Array.isArray(files.file) ? files.file[0] : files.file;
 
-      if (Array.isArray(uploadedFile)) {
-        const file = uploadedFile[0];
-        const newPath = path.join('/uploads', path.basename(file.filepath));
-        await updateSupabase(newPath); // Update Supabase with the new path
-        return res.status(200).json({ imageUrl: newPath });
-      } else if (uploadedFile) {
-        const file = uploadedFile as File;
-        const newPath = path.join('/uploads', path.basename(file.filepath));
-        await updateSupabase(newPath); // Update Supabase with the new path
-        return res.status(200).json({ imageUrl: newPath });
-      } else {
+      if (!uploadedFile) {
         return res.status(400).json({ message: 'No file uploaded' });
       }
+
+      const file = uploadedFile as File;
+      const fileData = await fs.readFile(file.filepath);
+
+      // Fix: Make sure targetColumn is a string
+      const targetColumn = Array.isArray(fields.column) ? fields.column[0] : fields.column || "image1"; 
+
+      // Upload to Supabase Storage using the service role key (supabaseAdmin)
+      const { data, error: storageError } = await supabaseAdmin.storage
+        .from('images') // Replace 'images' with your bucket name
+        .upload(`public/${Date.now()}_${file.originalFilename}`, fileData, {
+          contentType: file.mimetype || undefined,
+        });
+
+      if (storageError) {
+        console.error('Supabase storage upload error:', storageError);
+        return res.status(500).json({ message: 'Error uploading to Supabase storage' });
+      }
+
+      // Get public URL of the uploaded file
+      const { data: publicData } = supabaseAdmin.storage
+        .from('images')
+        .getPublicUrl(data.path);
+
+      const publicUrl = publicData?.publicUrl;
+
+      if (!publicUrl) {
+        console.error('Public URL is null');
+        return res.status(500).json({ message: 'Error generating public URL' });
+      }
+
+      // Save the public URL to the correct column (image1 or image2)
+      await updateSupabase(publicUrl, targetColumn);
+
+      // Return success message
+      return res.status(200).json({ message: 'Image uploaded successfully', imageUrl: publicUrl });
     });
   } catch (error) {
-    console.error('Error handling the upload:', error);
-    res.status(500).json({ message: 'Error handling the upload' });
+    console.error('Unexpected server error:', error);
+    res.status(500).json({ message: 'Internal server error' });
   }
 }
 
-async function updateSupabase(imagePath: string) {
-  // Update your Supabase table with the new image path
-  const { data, error } = await supabase
-    .from('content')
-    .update({ image1: imagePath })
-    .eq('id', 1); // Change this to the appropriate condition for updating the correct row
+async function updateSupabase(imageUrl: string, column: string) {
+  const { data, error } = await supabaseAdmin // Use supabaseAdmin here as well
+    .from("content")
+    .update({ [column]: imageUrl }) // Dynamically update either image1 or image2 based on the column
+    .eq("id", 1); // Adjust the ID as needed
 
   if (error) {
-    console.error('Error updating Supabase:', error);
-    throw new Error('Failed to update Supabase');
+    console.error("Error updating Supabase:", error);
+    throw new Error("Failed to update Supabase");
   }
 }

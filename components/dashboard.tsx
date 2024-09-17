@@ -1,12 +1,23 @@
 // components/dashboard.tsx
 import { useState, useEffect, ReactNode } from "react";
+import CustomSidebar from "./CustomSidebar";
+import ThemeSettingsSidebar from "./ThemeSettingsSidebar";
+import Embeds from "./embeds";
+import { useImageStore } from "./useImageStore";
 
 interface Section {
   label: string;
   content: string;
 }
-
 interface OtherLayoutProps {
+  isChecked: boolean; // Add isChecked prop
+  setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
+  textAlign: string; // Add textAlign prop
+  setTextAlign: React.Dispatch<React.SetStateAction<string>>;
+  position: string; // Add position prop
+  setPosition: React.Dispatch<React.SetStateAction<string>>;
+  height: "small" | "medium" | "large";
+  setHeight: React.Dispatch<React.SetStateAction<"small" | "medium" | "large">>;
   children: ReactNode;
   sections: Section[];
   headerSections: Section[];
@@ -25,6 +36,8 @@ interface OtherLayoutProps {
   navLinkSize2: string;
   editImageLabel: string | null;
   onEditImageClick: (label: string) => void;
+  opacity: number;
+  setOpacity: (value: number) => void;
 }
 
 const AccordionSection = ({
@@ -75,6 +88,10 @@ const AccordionSection = ({
 };
 
 export default function OtherLayout({
+  isChecked,
+  setIsChecked,
+  height,
+  setHeight,
   children,
   sections,
   headerSections,
@@ -87,6 +104,12 @@ export default function OtherLayout({
   navLinkSize2,
   editImageLabel,
   onEditImageClick,
+  opacity,
+  setOpacity,
+  position,
+  setPosition,
+  textAlign, // Add textAlign prop
+  setTextAlign, // Add setTextAlign setter prop
 }: OtherLayoutProps) {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string | null>(null);
@@ -98,13 +121,11 @@ export default function OtherLayout({
   const [isSidebarVisible, setIsSidebarVisible] = useState(false);
   const [isImageSidebarVisible, setIsImageSidebarVisible] = useState(false);
   const [editImage, setEditImage] = useState(false);
-  const [logoImage, setLogoImage] = useState<string>("/wow.svg");
-  const [value, setValue] = useState(40);
-  const [selectedButton, setSelectedButton] = useState<number>(1);
   const [selectedButtontab, setSelectedButtontab] = useState<number>(1);
   const [secondAccordionIndex, setSecondAccordionIndex] = useState<
     number | null
   >(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleTabClick = (index: number) => {
     setSelectedButtontab(index);
@@ -156,12 +177,14 @@ export default function OtherLayout({
   };
 
   const handleImageUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
+    column: string // Pass the column name (image1 or image2)
   ) => {
     const file = event.target.files?.[0];
     if (file) {
       const formData = new FormData();
       formData.append("file", file);
+      formData.append("column", column); // Specify which column to update
 
       try {
         const response = await fetch("/api/uploadImage", {
@@ -176,27 +199,71 @@ export default function OtherLayout({
           // Force reload the image by appending a timestamp query parameter
           newImageUrl += `?t=${new Date().getTime()}`;
 
-          // Update the state with the new image URL
-          setLogoImage(newImageUrl);
+          // Update the corresponding image state
+          if (column === "image1") {
+            useImageStore.getState().setLogoImage(newImageUrl); // Use Zustand to update logoImage
+          } else if (column === "image2") {
+            useImageStore.getState().setSecondaryImage(newImageUrl); // Use Zustand to update secondaryImage
+          }
+
+          setSuccessMessage(data.message);
+
+          // Clear the success message after 5 seconds
+          setTimeout(() => {
+            setSuccessMessage(null); // Clear the message after a delay
+          }, 2000); // 5000ms = 5 seconds
         } else {
           console.error("Image upload failed");
+          setSuccessMessage("Image upload failed");
+
+          // Clear the error message after 5 seconds
+          setTimeout(() => {
+            setSuccessMessage(null); // Clear the message after a delay
+          }, 2000);
         }
       } catch (error) {
         console.error("Error uploading image:", error);
+        setSuccessMessage("Error uploading image");
+
+        // Clear the error message after 5 seconds
+        setTimeout(() => {
+          setSuccessMessage(null); // Clear the message after a delay
+        }, 2000);
       }
     }
   };
 
-  const handleChangerange = (event: any) => {
-    setValue(event.target.value);
+  const handleChangerange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(event.target.value);
+    setOpacity(value); // Update the opacity state in page.tsx
+  };
+
+  const handleHeightChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setHeight(event.target.value as "small" | "medium" | "large");
   };
 
   const handleButtonClick = (index: number) => {
-    setSelectedButton(index);
+    const alignments = ["text-left", "text-center", "text-right"];
+    setTextAlign(alignments[index]);
+  };
+
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsChecked(event.target.checked); // Update the checkbox state
+  };
+
+  const handlePositionChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setPosition(event.target.value); // Update position based on selected value
   };
 
   return (
     <div className="h-full flex flex-1">
+      {successMessage && (
+        <div className="fixed z-[9] translate-x-[-50%] top-5 left-[50%] bg-green-500 text-white py-2 px-6 rounded transition-opacity duration-500 ease-in-out">
+          {successMessage}
+        </div>
+      )}
       <div className="w-[55px] bg-white h-full border-r">
         <div className="flex flex-col items-center">
           <button
@@ -330,144 +397,8 @@ export default function OtherLayout({
           </div>
         </aside>
       )}
-      {selectedButtontab === 2 && (
-        <aside className="bg-white text-[#303030] w-[300px]">
-          <h2 className="border-b px-4 font-semibold py-4">Theme settings</h2>
-          <div
-            className="overflow-y-scroll"
-            style={{ height: "calc(100vh - 64px)" }}
-          >
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Logo</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Color</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Typography</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Layout</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Animations</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Buttons</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Inputs</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Product cards</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Collection cards</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Blog cards</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Content containers</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Media</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Drawers</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Badges</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Cart</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-            <div className="cursor-pointer hover:bg-neutral-100 px-4 border-b flex py-3 justify-between items-center">
-              <p className="font-semibold text-sm">Checkout</p>
-              <p className="rotate-90 text-lg text-neutral-500">›</p>
-            </div>
-          </div>
-        </aside>
-      )}
-      {selectedButtontab === 3 && (
-        <aside className="bg-white text-[#303030] w-[300px]">
-          <h2 className="border-b px-4 font-semibold py-4">App embeds</h2>
-          <div className="p-4 w-full border-b">
-            <div className="relative w-full">
-              <form>
-                <label
-                  className="absolute inset-y-0 left-3 flex items-center"
-                  htmlFor="search"
-                >
-                  <img src="/search.svg" alt="Search" className="w-4 h-4" />
-                </label>
-                <input
-                  id="search"
-                  type="text"
-                  placeholder="Search app embeds..."
-                  className="text-sm border w-full text-neutral-700 border-neutral-600 py-1 pl-10 pr-4 rounded-lg hover:bg-neutral-100"
-                />
-              </form>
-            </div>
-          </div>
-          <div className="p-4 w-full">
-            <div className="mb-8">
-              <p className="text-sm max-w-[250px] text-neutral-500">
-                You don’t have any apps with embeds installed. Find apps built
-                for Online Store 2.0 themes on the{" "}
-                <a
-                  className="text-blue-600 underline"
-                  href="https://dopweb.com/"
-                  target="_blank"
-                >
-                  Shopify App Store.
-                </a>
-              </p>
-            </div>
-            <p className="font-semibold text-[14px] text-[#303030]">
-              Recommended apps with embeds
-            </p>
-            <div className="relative w-[fit-content] border mt-2 border-neutral-200 rounded-lg p-3">
-              <input
-                type="file"
-                className="absolute cursor-pointer inset-0 h-full opacity-0 z-50"
-                accept="image/*"
-              />
-              <div className="text-center flex gap-3 items-center">
-                <img
-                  className="rounded-lg border"
-                  src="/sinbox.svg"
-                  alt="logo"
-                />
-                <div className="text-left">
-                  <p className="text-xs text-neutral-600">Shopify Inbox</p>
-                  <p className="text-xs text-neutral-600">4.8 ★ Free</p>
-                </div>
-                <img
-                  className="rounded-lg ml-3 p-1 border"
-                  src="/upload.svg"
-                  alt="logo"
-                />
-              </div>
-            </div>
-          </div>
-        </aside>
-      )}
+      {selectedButtontab === 2 && <ThemeSettingsSidebar />}
+      {selectedButtontab === 3 && <Embeds />}
       <main
         className="flex-1 p-2 bg-neutral-200 overflow-y-scroll"
         style={{ height: "calc(100vh - 64px)" }}
@@ -558,7 +489,7 @@ export default function OtherLayout({
                     type="file"
                     className="absolute cursor-pointer inset-0 w-full h-full opacity-0 z-50"
                     accept="image/*"
-                    onChange={handleImageUpload}
+                    onChange={(e) => handleImageUpload(e, "image1")}
                   />
                   <div className="text-center">
                     <h3 className="my-2 text-[13px] font-medium text-gray-900">
@@ -589,7 +520,7 @@ export default function OtherLayout({
                       type="file"
                       className="absolute cursor-pointer inset-0 w-full h-full opacity-0 z-50"
                       accept="image/*"
-                      onChange={handleImageUpload}
+                      onChange={(e) => handleImageUpload(e, "image2")}
                     />
                     <div className="text-center">
                       <h3 className="my-2 text-[13px] font-medium text-gray-900">
@@ -620,22 +551,27 @@ export default function OtherLayout({
                       id="range1"
                       type="range"
                       min="0"
-                      max="100"
+                      max="1.0"
+                      step="0.01"
                       className="mt-2 w-[75%]"
-                      value={value}
+                      value={opacity}
                       onChange={handleChangerange}
                     />
                     <span className="text-sm text-[#303030] rounded-lg border border-neutral-500 py-1 px-2">
-                      {value} %
+                      {Math.round(opacity * 100)} %
                     </span>
                   </div>
                 </div>
                 <div className="mt-5 mb-2">
                   <p className="text-sm text-neutral-700 mb-2">Banner height</p>
-                  <select className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg">
-                    <option value="">Small</option>
-                    <option value="">Medium</option>
-                    <option value="" selected>
+                  <select
+                    value={height}
+                    onChange={handleHeightChange}
+                    className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg"
+                  >
+                    <option value="small">Small</option>
+                    <option value="medium">Medium</option>
+                    <option value="large" selected>
                       Large
                     </option>
                   </select>
@@ -647,23 +583,39 @@ export default function OtherLayout({
                   <p className="text-sm text-neutral-700 mb-2">
                     Desktop content position
                   </p>
-                  <select className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg">
-                    <option value="">Top left</option>
-                    <option value="">Top center</option>
-                    <option value="">Top right</option>
-                    <option value="">Middle left</option>
-                    <option value="" selected>
+                  <select
+                    value={position}
+                    onChange={handlePositionChange}
+                    className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg"
+                  >
+                    <option value="items-start justify-start">Top left</option>
+                    <option value="items-center justify-start">
+                      Top center
+                    </option>
+                    <option value="items-end justify-start">Top right</option>
+                    <option value="items-start justify-center">
+                      Middle left
+                    </option>
+                    <option value="items-center justify-center">
                       Middle center
                     </option>
-                    <option value="">Middle right</option>
-                    <option value="">Bottom left</option>
-                    <option value="">Bottom center</option>
-                    <option value="">Bottom right</option>
+                    <option value="items-end justify-center">
+                      Middle right
+                    </option>
+                    <option value="items-start justify-end">Bottom left</option>
+                    <option value="items-center justify-end">
+                      Bottom center
+                    </option>
+                    <option value="items-end justify-end">Bottom right</option>
                   </select>
                 </div>
                 <div className="mt-5 mb-2">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={isChecked}
+                      onChange={handleCheckboxChange}
+                    />
                     <p className="text-sm text-neutral-600">
                       Show container on desktop
                     </p>
@@ -677,9 +629,9 @@ export default function OtherLayout({
                     {["Left", "Center", "Right"].map((label, index) => (
                       <button
                         key={index}
-                        onClick={() => handleButtonClick(index)}
+                        onClick={() => handleButtonClick(index)} // Call handleButtonClick with the index
                         className={`py-1 px-2 rounded w-[33.33%] text-sm text-neutral-600 ${
-                          selectedButton === index
+                          textAlign === `text-${label.toLowerCase()}`
                             ? "bg-white"
                             : "bg-neutral-100"
                         }`}
@@ -737,6 +689,72 @@ export default function OtherLayout({
                     </p>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <div className="px-2 pb-4">
+                    <h2 className="px-2 font-semibold text-sm text-[#303030]">
+                      Keyboard shortcuts
+                    </h2>
+                    <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                      <p className="text-sm text-[#303030]">Undo</p>
+                      <div className="flex gap-1">
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                          ⌘
+                        </p>
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                          Z
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex rounded-lg my-2 justify-between items-center py-1 px-2">
+                      <p className="text-sm text-[#303030]">Redo</p>
+                      <div className="flex gap-1">
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                          ⌘
+                        </p>
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                          Y
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                      <p className="text-sm text-[#303030]">Save</p>
+                      <div className="flex gap-1">
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                          ⌘
+                        </p>
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                          S
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex rounded-lg my-2 justify-between items-center py-1 px-2">
+                      <p className="text-sm text-[#303030]">
+                        Preview inspector
+                      </p>
+                      <div className="flex gap-1">
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                          ⌘
+                        </p>
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                          |
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                      <p className="text-sm text-[#303030]">
+                        See all shortcuts
+                      </p>
+                      <div className="flex gap-1">
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                          ⌘
+                        </p>
+                        <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                          /
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             )}
           </div>
@@ -744,7 +762,7 @@ export default function OtherLayout({
       )}
       {selectedButtontab === 2 && (
         <aside
-          className={`bg-white w-[300px] overflow-y-scroll ${
+          className={`bg-white w-[300px] max-xl:hidden overflow-y-scroll ${
             isSidebarVisible ? "block" : "hidden"
           } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
           style={{ height: "calc(100vh - 64px)" }}
@@ -777,7 +795,7 @@ export default function OtherLayout({
       )}
       {selectedButtontab === 3 && (
         <aside
-          className={`bg-white w-[300px] overflow-y-scroll ${
+          className={`bg-white w-[300px] max-xl:hidden overflow-y-scroll ${
             isSidebarVisible ? "block" : "hidden"
           } xl:block max-xl:absolute max-xl:left-[55px] max-lg:w-1/5`}
           style={{ height: "calc(100vh - 64px)" }}

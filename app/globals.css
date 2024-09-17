@@ -32,24 +32,13 @@ body {
   }
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-  width: 300px;
-  height: 5px;
-  border: none;
-  border-radius: 3px;
-}
-
-input[type=range]::-webkit-slider-thumb {
-  border: none;
-  height: 16px;
-  width: 16px;
-  border-radius: 50%;
-  background: goldenrod;
-  margin-top: -5px;
-}
-
-input[type=range]:focus {
-  outline: none;
+input[type="range" i] {
+  appearance: auto;
+  cursor: default;
+  color: light-dark(rgb(16, 16, 16), rgb(255, 255, 255));
+  padding: initial;
+  border: initial;
+  margin: 2px;
 }
 
 .search-label {

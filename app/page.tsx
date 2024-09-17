@@ -4,7 +4,11 @@ import { useEffect, useState } from "react";
 import OtherLayout from "../components/dashboard";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { supabase } from "./utils/supabaseClient";
+import { useImageStore } from "../components/useImageStore";
 import "./globals.css";
+interface HomePageProps {
+  opacity: number; // Define the type for opacity prop
+}
 
 export default function HomePage() {
   const [title, setTitle] = useState<string>("");
@@ -22,8 +26,22 @@ export default function HomePage() {
   const [navLinkUrl2, setNavLinkUrl2] = useState<string>("");
   const [navLinkSize1, setNavLinkSize1] = useState<string>("text-sm");
   const [navLinkSize2, setNavLinkSize2] = useState<string>("text-sm");
-  const [logoImage, setLogoImage] = useState<string>("");
+  const logoImage = useImageStore((state) => state.logoImage);
   const [editImageLabel, setEditImageLabel] = useState<string | null>(null);
+  const secondaryImage = useImageStore((state) => state.secondaryImage);
+  const [opacity, setOpacity] = useState<number>(0.4);
+  const [height, setHeight] = useState<"small" | "medium" | "large">("medium");
+  const [position, setPosition] = useState<string>(
+    "items-center justify-center"
+  );
+  const [textAlign, setTextAlign] = useState<string>("text-center");
+  const [isChecked, setIsChecked] = useState<boolean>(false);
+
+  const sizeToHeight = {
+    small: "h-[40vh]", // Example height for small
+    medium: "h-[60vh]", // Example height for medium
+    large: "h-[80vh]", // Example height for large
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -47,14 +65,13 @@ export default function HomePage() {
           setLink(data.sublink || "Default Link");
           setTitleSize(data.titleSize || "text-4xl");
           setButtonSize(data.buttonSize || "text-lg");
-          setLogoImage(imageUrl);
         } else {
           console.warn("No data returned from Supabase");
         }
       } catch (error) {
         console.error("Failed to load initial data:", error);
       } finally {
-        setLoading(false); // Set loading to false after data is fetched
+        setLoading(false);
       }
     };
     loadData();
@@ -96,10 +113,6 @@ export default function HomePage() {
   };
 
   const handleImageChange = async (label: string, newimage1: string) => {
-    if (label === "Logo") {
-      setLogoImage(newimage1);
-      // Add logic to update Supabase here if needed
-    }
     // Handle other images similarly
     localStorage.setItem(label.toLowerCase(), newimage1);
     setIsEdited(true);
@@ -154,6 +167,16 @@ export default function HomePage() {
         { label: "Title", content: title },
         { label: "Button", content: sublink },
       ]}
+      isChecked={isChecked}
+      setIsChecked={setIsChecked}
+      opacity={opacity}
+      setOpacity={setOpacity}
+      position={position}
+      setPosition={setPosition}
+      textAlign={textAlign}
+      setTextAlign={setTextAlign}
+      height={height}
+      setHeight={setHeight}
       onContentChange={handleContentChange}
       onSave={handleSave}
       isSaveEnabled={isEdited}
@@ -202,39 +225,55 @@ export default function HomePage() {
         </div>
       </nav>
       <div className="relative text-white">
-        <img
-          src={logoImage}
-          alt="Logo"
-          className="h-full w-full absolute cursor-pointer object-cover"
-          onClick={() => handleImageClick("Logo")}
-        />
-        <div className="h-full w-full bg-black absolute opacity-40"></div>
-        <div className="flex min-h-[70vh] relative gap-6 flex-col justify-center items-center z-2 p-10">
-          <h1
-            className={`hover:outline outline-[3px] outline-blue-500 text-center ${titleSize} font-semibold cursor-pointer`}
-            onClick={() => handleEditClick("Title")}
-          >
-            {title || "Loading Title..."}
-          </h1>
-          <a
-            className={`hover:outline outline-[3px] outline-blue-500 border py-2 px-6 cursor-pointer ${buttonSize}`}
-            href=""
-            onClick={(event) => {
-              event.preventDefault();
-              handleEditClick("Button");
-            }}
-          >
-            {sublink || "Loading Button..."}
-          </a>
+        <div className="absolute flex h-full w-full text-white">
+          <img
+            src={logoImage}
+            alt="Logo"
+            className={`h-full object-cover cursor-pointer ${
+              secondaryImage ? "w-1/2" : "w-full"
+            }`}
+            onClick={() => handleImageClick("Logo")}
+          />
+          {secondaryImage && ( // Only render the second image if it exists
+            <img
+              src={secondaryImage || "default2.png"} // Fallback to default image if secondaryImage is null
+              alt="Secondary Image"
+              className="h-full w-1/2 object-cover"
+            />
+          )}
+        </div>
+        <div
+          className="h-full w-full absolute z-2 bg-black"
+          style={{ opacity }}
+        ></div>
+        <div
+          className={`flex relative flex-col z-2 p-10 ${sizeToHeight[height]} ${position}`}
+        >
+          <div className={`p-8 ${textAlign} ${isChecked ? 'bg-sky-950' : ''}`}>
+            <h1
+              className={`hover:outline outline-[3px] outline-blue-500 mb-10 text-center ${titleSize} font-semibold cursor-pointer`}
+              onClick={() => handleEditClick("Title")}
+            >
+              {title || "Loading Title..."}
+            </h1>
+            <a
+              className={`hover:outline outline-[3px] outline-blue-500 border py-2 px-6 cursor-pointer ${buttonSize}`}
+              href=""
+              onClick={(event) => {
+                event.preventDefault();
+                handleEditClick("Button");
+              }}
+            >
+              {sublink || "Loading Button..."}
+            </a>
+          </div>
         </div>
       </div>
       <footer className="bg-white py-10 rounded-b-lg">
         <div className="flex text-lg gap-6 flex-col items-center border-b pb-12">
           <p>Subsribe to our emails</p>
           <form className="relative w-[300px]">
-            <button
-              className="absolute text-neutral-500 inset-y-0 right-3 flex items-center"
-            >
+            <button className="absolute text-neutral-500 inset-y-0 right-3 flex items-center">
               →
             </button>
             <input
@@ -246,10 +285,16 @@ export default function HomePage() {
         </div>
         <div className="flex gap-1 px-12 mt-14">
           <p className="text-xs opacity-60">© 2024,</p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">My Store</p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">Powered by Shopify</p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
+            My Store
+          </p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
+            Powered by Shopify
+          </p>
           <p className="text-xs mx-2 opacity-60">.</p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">Powered by Shopify</p>
+          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
+            Powered by Shopify
+          </p>
         </div>
       </footer>
     </OtherLayout>
