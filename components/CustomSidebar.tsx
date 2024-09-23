@@ -1,42 +1,57 @@
-import { useState } from "react";
+import React from "react";
 
-interface CustomSidebarProps {
+interface SidebarProps {
   isSidebarVisible: boolean;
+  setIsSidebarVisible: (visible: boolean) => void;
   editContent: string | null;
-  editImage: boolean;
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  handleImageUpload: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleChangerange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleButtonClick: (index: number) => void;
+  editImage: boolean;
+  handleImageUpload: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: string
+  ) => void;
   selectedLabel: string;
   titleSize: string;
   buttonSize: string;
   navLinkSize1: string;
   navLinkSize2: string;
-  selectedButton: number;
-  value: number;
-  setIsSidebarVisible: (visible: boolean) => void;
+  handleSizeChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  opacity: number;
+  handleChangerange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  height: string;
+  handleHeightChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  position: string;
+  handlePositionChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  isChecked: boolean;
+  handleCheckboxChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  textAlign: string;
+  handleButtonClick: (index: number) => void;
 }
 
-export default function CustomSidebar({
+const Sidebar: React.FC<SidebarProps> = ({
   isSidebarVisible,
+  setIsSidebarVisible,
   editContent,
-  editImage,
   handleChange,
-  handleSizeChange,
+  editImage,
   handleImageUpload,
-  handleChangerange,
-  handleButtonClick,
   selectedLabel,
-  titleSize = "text-xl",
+  titleSize,
   buttonSize,
   navLinkSize1,
   navLinkSize2,
-  selectedButton,
-  value,
-  setIsSidebarVisible,
-}: CustomSidebarProps) {
+  handleSizeChange,
+  opacity,
+  handleChangerange,
+  height,
+  handleHeightChange,
+  position,
+  handlePositionChange,
+  isChecked,
+  handleCheckboxChange,
+  textAlign,
+  handleButtonClick,
+}) => {
   return (
     <aside
       className={`bg-white w-[300px] overflow-y-scroll ${
@@ -105,7 +120,7 @@ export default function CustomSidebar({
                 type="file"
                 className="absolute cursor-pointer inset-0 w-full h-full opacity-0 z-50"
                 accept="image/*"
-                onChange={handleImageUpload}
+                onChange={(e) => handleImageUpload(e, "image1")}
               />
               <div className="text-center">
                 <h3 className="my-2 text-[13px] font-medium text-gray-900">
@@ -132,7 +147,7 @@ export default function CustomSidebar({
                   type="file"
                   className="absolute cursor-pointer inset-0 w-full h-full opacity-0 z-50"
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={(e) => handleImageUpload(e, "image2")}
                 />
                 <div className="text-center">
                   <h3 className="my-2 text-[13px] font-medium text-gray-900">
@@ -163,22 +178,27 @@ export default function CustomSidebar({
                   id="range1"
                   type="range"
                   min="0"
-                  max="100"
+                  max="1.0"
+                  step="0.01"
                   className="mt-2 w-[75%]"
-                  value={value}
+                  value={opacity}
                   onChange={handleChangerange}
                 />
                 <span className="text-sm text-[#303030] rounded-lg border border-neutral-500 py-1 px-2">
-                  {value} %
+                  {Math.round(opacity * 100)} %
                 </span>
               </div>
             </div>
             <div className="mt-5 mb-2">
               <p className="text-sm text-neutral-700 mb-2">Banner height</p>
-              <select className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg">
-                <option value="">Small</option>
-                <option value="">Medium</option>
-                <option value="" selected>
+              <select
+                value={height}
+                onChange={handleHeightChange}
+                className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg"
+              >
+                <option value="small">Small</option>
+                <option value="medium">Medium</option>
+                <option value="large" selected>
                   Large
                 </option>
               </select>
@@ -190,23 +210,31 @@ export default function CustomSidebar({
               <p className="text-sm text-neutral-700 mb-2">
                 Desktop content position
               </p>
-              <select className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg">
-                <option value="">Top left</option>
-                <option value="">Top center</option>
-                <option value="">Top right</option>
-                <option value="">Middle left</option>
-                <option value="" selected>
+              <select
+                value={position}
+                onChange={handlePositionChange}
+                className="w-full px-3 py-1 text-neutral-600 text-[14px] hover:bg-neutral-100 border-neutral-600 border rounded-lg"
+              >
+                <option value="items-start justify-start">Top left</option>
+                <option value="items-center justify-start">Top center</option>
+                <option value="items-end justify-start">Top right</option>
+                <option value="items-start justify-center">Middle left</option>
+                <option value="items-center justify-center">
                   Middle center
                 </option>
-                <option value="">Middle right</option>
-                <option value="">Bottom left</option>
-                <option value="">Bottom center</option>
-                <option value="">Bottom right</option>
+                <option value="items-end justify-center">Middle right</option>
+                <option value="items-start justify-end">Bottom left</option>
+                <option value="items-center justify-end">Bottom center</option>
+                <option value="items-end justify-end">Bottom right</option>
               </select>
             </div>
             <div className="mt-5 mb-2">
               <label className="flex items-center gap-2">
-                <input type="checkbox" />
+                <input
+                  type="checkbox"
+                  checked={isChecked}
+                  onChange={handleCheckboxChange}
+                />
                 <p className="text-sm text-neutral-600">
                   Show container on desktop
                 </p>
@@ -220,9 +248,11 @@ export default function CustomSidebar({
                 {["Left", "Center", "Right"].map((label, index) => (
                   <button
                     key={index}
-                    onClick={() => handleButtonClick(index)}
+                    onClick={() => handleButtonClick(index)} // Call handleButtonClick with the index
                     className={`py-1 px-2 rounded w-[33.33%] text-sm text-neutral-600 ${
-                      selectedButton === index ? "bg-white" : "bg-neutral-100"
+                      textAlign === `text-${label.toLowerCase()}`
+                        ? "bg-white"
+                        : "bg-neutral-100"
                     }`}
                   >
                     {label}
@@ -276,9 +306,73 @@ export default function CustomSidebar({
                 </p>
               </div>
             </div>
+            <div className="mt-4">
+              <div className="px-2 pb-4">
+                <h2 className="px-2 font-semibold text-sm text-[#303030]">
+                  Keyboard shortcuts
+                </h2>
+                <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                  <p className="text-sm text-[#303030]">Undo</p>
+                  <div className="flex gap-1">
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                      ⌘
+                    </p>
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                      Z
+                    </p>
+                  </div>
+                </div>
+                <div className="flex rounded-lg my-2 justify-between items-center py-1 px-2">
+                  <p className="text-sm text-[#303030]">Redo</p>
+                  <div className="flex gap-1">
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                      ⌘
+                    </p>
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                      Y
+                    </p>
+                  </div>
+                </div>
+                <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                  <p className="text-sm text-[#303030]">Save</p>
+                  <div className="flex gap-1">
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                      ⌘
+                    </p>
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                      S
+                    </p>
+                  </div>
+                </div>
+                <div className="flex rounded-lg my-2 justify-between items-center py-1 px-2">
+                  <p className="text-sm text-[#303030]">Preview inspector</p>
+                  <div className="flex gap-1">
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                      ⌘
+                    </p>
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                      |
+                    </p>
+                  </div>
+                </div>
+                <div className="flex bg-neutral-50 rounded-lg my-2 justify-between items-center py-1 px-2">
+                  <p className="text-sm text-[#303030]">See all shortcuts</p>
+                  <div className="flex gap-1">
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm font-light rounded">
+                      ⌘
+                    </p>
+                    <p className="bg-neutral-100 h-7 w-7 flex items-center justify-center text-xm rounded">
+                      /
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;

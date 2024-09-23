@@ -7,7 +7,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [fadeOut, setFadeOut] = useState<boolean>(false);
 
-  const handleSave = async () => {
+  /*const handleSave = async () => {
     const title = localStorage.getItem("title");
     const sublink = localStorage.getItem("sublink");
     const titleSize = localStorage.getItem("titleSize") || "text-4xl";
@@ -43,7 +43,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error('Error saving content:', error);
     }
-  };
+  };*/
 
   return (
     <html lang="en">
@@ -64,7 +64,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             </div>
             <div className="w-[10%] text-right">
               <button
-                onClick={handleSave}
+                //onClick={handleSave}
                 className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
               >
                 Save

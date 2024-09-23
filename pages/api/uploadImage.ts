@@ -1,5 +1,5 @@
 // api/uploadImage.ts
-import { NextApiRequest, NextApiResponse } from "next";
+/*import { NextApiRequest, NextApiResponse } from "next";
 import formidable, { File } from "formidable";
 import fs from "fs/promises";
 import { supabaseAdmin } from "../../app/utils/supabaseClient"; // Use supabaseAdmin for server-side operations
@@ -79,3 +79,4 @@ async function updateSupabase(imageUrl: string, column: string) {
     throw new Error("Failed to update Supabase");
   }
 }
+*/

@@ -3,23 +3,19 @@
 import { useEffect, useState } from "react";
 import OtherLayout from "../components/dashboard";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { supabase } from "./utils/supabaseClient";
 import { useImageStore } from "../components/useImageStore";
 import "./globals.css";
-interface HomePageProps {
-  opacity: number; // Define the type for opacity prop
-}
 
 export default function HomePage() {
-  const [title, setTitle] = useState<string>("");
-  const [sublink, setLink] = useState<string>("");
+  const [title, setTitle] = useState<string>("Browse our latest products");
+  const [sublink, setLink] = useState<string>("Shop all");
   const [initialTitle, setInitialTitle] = useState<string>("");
   const [initialSublink, setInitialSublink] = useState<string>("");
   const [isEdited, setIsEdited] = useState<boolean>(false);
   const [editLabel, setEditLabel] = useState<string | null>(null);
-  const [titleSize, setTitleSize] = useState<string>("text-4xl");
-  const [buttonSize, setButtonSize] = useState<string>("text-lg");
-  const [loading, setLoading] = useState<boolean>(true);
+  const [titleSize, setTitleSize] = useState<string>("text-6xl");
+  const [buttonSize, setButtonSize] = useState<string>("text-xl");
+  const [loading, setLoading] = useState<boolean>(false);
   const [navLink1, setNavLink1] = useState<string>("Home");
   const [navLink2, setNavLink2] = useState<string>("Default");
   const [navLinkUrl1, setNavLinkUrl1] = useState<string>("");
@@ -38,44 +34,24 @@ export default function HomePage() {
   const [isChecked, setIsChecked] = useState<boolean>(false);
 
   const sizeToHeight = {
-    small: "h-[40vh]", // Example height for small
-    medium: "h-[60vh]", // Example height for medium
-    large: "h-[80vh]", // Example height for large
+    small: "h-[40vh]",
+    medium: "h-[60vh]",
+    large: "h-[80vh]",
   };
 
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("content")
-          .select("*")
-          .single(); // Assuming you expect only one row
-        console.log(data);
+  /*
+    useEffect(() => {
+    const savedTitle = localStorage.getItem("title");
+    const savedTitleSize = localStorage.getItem("titleSize");
+    const savedSublink = localStorage.getItem("sublink");
+    const savedButtonSize = localStorage.getItem("buttonSize");
 
-        if (error) {
-          console.error("Error fetching content:", error);
-          throw new Error("Failed to fetch data");
-        }
-
-        if (data) {
-          const imageUrl = data.image1.startsWith("http")
-            ? data.image1
-            : `${data.image1}`;
-          setTitle(data.title || "Default Title");
-          setLink(data.sublink || "Default Link");
-          setTitleSize(data.titleSize || "text-4xl");
-          setButtonSize(data.buttonSize || "text-lg");
-        } else {
-          console.warn("No data returned from Supabase");
-        }
-      } catch (error) {
-        console.error("Failed to load initial data:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadData();
+    if (savedTitle) setTitle(savedTitle);
+    if (savedTitleSize) setTitleSize(savedTitleSize);
+    if (savedSublink) setLink(savedSublink);
+    if (savedButtonSize) setButtonSize(savedButtonSize);
   }, []);
+  */
 
   const handleContentChange = (
     label: string,
@@ -249,7 +225,7 @@ export default function HomePage() {
         <div
           className={`flex relative flex-col z-2 p-10 ${sizeToHeight[height]} ${position}`}
         >
-          <div className={`p-8 ${textAlign} ${isChecked ? 'bg-sky-950' : ''}`}>
+          <div className={`p-8 ${textAlign} ${isChecked ? "bg-sky-950" : ""}`}>
             <h1
               className={`hover:outline outline-[3px] outline-blue-500 mb-10 text-center ${titleSize} font-semibold cursor-pointer`}
               onClick={() => handleEditClick("Title")}
