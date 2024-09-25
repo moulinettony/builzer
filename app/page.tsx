@@ -20,10 +20,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex overflow-hidden relative items-center justify-center bg-[#141414]">
+    <div className="min-h-screen text-neutral-800 flex overflow-hidden relative items-center justify-center bg-[#141414]">
       <div className="back_noise"></div>
-      <div className="shape shape-1"></div>
-      <div className="shape shape-2"></div>
+      {/*<div className="shape shape-1"></div>*/}
+      {/*<div className="shape shape-2"></div>*/}
       <div className="bg-white z-[5] p-10 rounded-lg shadow-lg w-full max-w-[30rem]">
         <img className="mb-10" src="/logo.svg" alt="" />
         <h1 className="text-2xl font-semibold mb-1 text-neutral-800">Log in</h1>
