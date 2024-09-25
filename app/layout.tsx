@@ -2,10 +2,12 @@
 "use client";
 import { ReactNode, useState } from "react";
 import "./globals.css";
+import { usePathname } from "next/navigation";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const [showPopup, setShowPopup] = useState<boolean>(false);
   const [fadeOut, setFadeOut] = useState<boolean>(false);
+  const pathname = usePathname();
 
   /*const handleSave = async () => {
     const title = localStorage.getItem("title");
@@ -48,30 +50,32 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="h-screen flex flex-col">
-        <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
-          <div className="flex items-center justify-center">
-            <div className="w-[10%] text-center">
-              <img src="/logo.svg" alt="" />
+        {pathname !== "/" && (
+          <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
+            <div className="flex items-center justify-center">
+              <div className="w-[10%] text-center">
+                <img src="/logo.svg" alt="" />
+              </div>
+              <div className="w-[80%] flex items-center justify-center gap-6">
+                <a className="font-semibold text-sm" href="">
+                  Default
+                </a>
+                <div className="h-[1rem] w-[1px] bg-[#9f9f9f]"></div>
+                <a className="font-semibold text-sm" href="">
+                  Home Page
+                </a>
+              </div>
+              <div className="w-[10%] text-right">
+                <button
+                  //onClick={handleSave}
+                  className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
+                >
+                  Save
+                </button>
+              </div>
             </div>
-            <div className="w-[80%] flex items-center justify-center gap-6">
-              <a className="font-semibold text-sm" href="">
-                Default
-              </a>
-              <div className="h-[1rem] w-[1px] bg-[#9f9f9f]"></div>
-              <a className="font-semibold text-sm" href="">
-                Home Page
-              </a>
-            </div>
-            <div className="w-[10%] text-right">
-              <button
-                //onClick={handleSave}
-                className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </nav>
+          </nav>
+        )}
         <div className="flex flex-1">
           <main className="flex-1">{children}</main>
         </div>

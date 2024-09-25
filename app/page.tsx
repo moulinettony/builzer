@@ -1,278 +1,120 @@
 // app/page.tsx
 "use client";
-import { useEffect, useState } from "react";
-import OtherLayout from "../components/dashboard";
-import LoadingSpinner from "../components/LoadingSpinner";
-import { useImageStore } from "../components/useImageStore";
-import "./globals.css";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-export default function HomePage() {
-  const [title, setTitle] = useState<string>("Browse our latest products");
-  const [sublink, setLink] = useState<string>("Shop all");
-  const [initialTitle, setInitialTitle] = useState<string>("");
-  const [initialSublink, setInitialSublink] = useState<string>("");
-  const [isEdited, setIsEdited] = useState<boolean>(false);
-  const [editLabel, setEditLabel] = useState<string | null>(null);
-  const [titleSize, setTitleSize] = useState<string>("text-6xl");
-  const [buttonSize, setButtonSize] = useState<string>("text-xl");
-  const [loading, setLoading] = useState<boolean>(false);
-  const [navLink1, setNavLink1] = useState<string>("Home");
-  const [navLink2, setNavLink2] = useState<string>("Default");
-  const [navLinkUrl1, setNavLinkUrl1] = useState<string>("");
-  const [navLinkUrl2, setNavLinkUrl2] = useState<string>("");
-  const [navLinkSize1, setNavLinkSize1] = useState<string>("text-sm");
-  const [navLinkSize2, setNavLinkSize2] = useState<string>("text-sm");
-  const logoImage = useImageStore((state) => state.logoImage);
-  const [editImageLabel, setEditImageLabel] = useState<string | null>(null);
-  const secondaryImage = useImageStore((state) => state.secondaryImage);
-  const [opacity, setOpacity] = useState<number>(0.4);
-  const [height, setHeight] = useState<"small" | "medium" | "large">("medium");
-  const [position, setPosition] = useState<string>(
-    "items-center justify-center"
-  );
-  const [textAlign, setTextAlign] = useState<string>("text-center");
-  const [isChecked, setIsChecked] = useState<boolean>(false);
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const router = useRouter();
 
-  const sizeToHeight = {
-    small: "h-[40vh]",
-    medium: "h-[60vh]",
-    large: "h-[80vh]",
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Email:", email);
+    console.log("Password:", password);
+    router.push("/landing-page");
   };
 
-  /*
-    useEffect(() => {
-    const savedTitle = localStorage.getItem("title");
-    const savedTitleSize = localStorage.getItem("titleSize");
-    const savedSublink = localStorage.getItem("sublink");
-    const savedButtonSize = localStorage.getItem("buttonSize");
-
-    if (savedTitle) setTitle(savedTitle);
-    if (savedTitleSize) setTitleSize(savedTitleSize);
-    if (savedSublink) setLink(savedSublink);
-    if (savedButtonSize) setButtonSize(savedButtonSize);
-  }, []);
-  */
-
-  const handleContentChange = (
-    label: string,
-    newContent: string,
-    newSize?: string
-  ) => {
-    if (label === "Title") {
-      setTitle(newContent);
-      if (newSize) setTitleSize(newSize);
-      localStorage.setItem("title", newContent);
-      localStorage.setItem("titleSize", newSize || titleSize);
-    } else if (label === "Button") {
-      setLink(newContent);
-      if (newSize) setButtonSize(newSize);
-      localStorage.setItem("sublink", newContent);
-      localStorage.setItem("buttonSize", newSize || buttonSize);
-    } else if (label === "Home") {
-      setNavLink1(newContent);
-      if (newSize) setNavLinkSize1(newSize);
-      localStorage.setItem("Home", newContent);
-      localStorage.setItem("navLinkSize1", newSize || navLinkSize1);
-    } else if (label === "Default") {
-      setNavLink2(newContent);
-      if (newSize) setNavLinkSize2(newSize);
-      localStorage.setItem("Default", newContent);
-      localStorage.setItem("navLinkSize2", newSize || navLinkSize2);
-    } else if (label === "NavLinkUrl1") {
-      setNavLinkUrl1(newContent);
-      localStorage.setItem("navLinkUrl1", newContent);
-    } else if (label === "NavLinkUrl2") {
-      setNavLinkUrl2(newContent);
-      localStorage.setItem("navLinkUrl2", newContent);
-    }
-    setIsEdited(true);
-  };
-
-  const handleImageChange = async (label: string, newimage1: string) => {
-    // Handle other images similarly
-    localStorage.setItem(label.toLowerCase(), newimage1);
-    setIsEdited(true);
-    setEditImageLabel(null);
-  };
-
-  const handleSave = async () => {
-    const data = { title, sublink, titleSize, buttonSize };
-
-    console.log("Data to save:", data); // Debug log
-
-    try {
-      const res = await fetch("/api/saveContent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        console.log("Content saved successfully");
-        setInitialTitle(title);
-        setInitialSublink(sublink);
-        setIsEdited(false);
-      } else {
-        const errorData = await res.json();
-        console.error("Failed to save content:", errorData.message); // Display detailed error message
-      }
-    } catch (error) {
-      console.error("Error saving content:", error);
-    }
-  };
-
-  const handleEditClick = (label: string) => {
-    console.log("Switching to edit text:", label);
-    setEditLabel(label);
-    setEditImageLabel(null);
-  };
-
-  const handleImageClick = (label: string) => {
-    console.log("Switching to edit image:", label);
-    setEditImageLabel(label);
-    setEditLabel(null);
+  const handleRedirect = () => {
+    router.push("/landing-page");
   };
 
   return (
-    <OtherLayout
-      headerSections={[
-        { label: "Home", content: navLink1 },
-        { label: "Default", content: navLink2 },
-      ]}
-      sections={[
-        { label: "Title", content: title },
-        { label: "Button", content: sublink },
-      ]}
-      isChecked={isChecked}
-      setIsChecked={setIsChecked}
-      opacity={opacity}
-      setOpacity={setOpacity}
-      position={position}
-      setPosition={setPosition}
-      textAlign={textAlign}
-      setTextAlign={setTextAlign}
-      height={height}
-      setHeight={setHeight}
-      onContentChange={handleContentChange}
-      onSave={handleSave}
-      isSaveEnabled={isEdited}
-      editLabel={editLabel}
-      editImageLabel={editImageLabel} // Pass down the image edit label
-      onEditClick={handleEditClick}
-      onEditImageClick={handleImageClick} // Pass down the image click handler
-      titleSize={titleSize}
-      buttonSize={buttonSize}
-      navLinkSize1={navLinkSize1}
-      navLinkSize2={navLinkSize2}
-    >
-      {loading && <LoadingSpinner />}
-      <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
-        <div className="flex items-center justify-center">
-          <div className="w-[20%] text-center">
-            <img src="/wow.svg" alt="Logo" className="cursor-pointer" />
-          </div>
-          <div className="w-[70%] flex gap-6">
-            <a
-              className={`hover:outline outline-[2px] outline-blue-500 ${navLinkSize1}`} // Use navLinkSize1 dynamically
-              href="#"
-              onClick={(event) => {
-                event.preventDefault(); // Prevent the default anchor behavior
-                handleEditClick("Home");
-              }}
-            >
-              {navLink1}
-            </a>
-            <a
-              className={`hover:outline outline-[2px] outline-blue-500 ${navLinkSize2}`} // Use navLinkSize2 dynamically
-              href="#"
-              onClick={(event) => {
-                event.preventDefault(); // Prevent the default anchor behavior
-                handleEditClick("Default");
-              }}
-            >
-              {navLink2}
-            </a>
-          </div>
-          <div className="w-[10%] flex gap-5 text-right">
-            <img src="/search.svg" alt="Search" className="cursor-pointer" />
-            <img src="/profile.svg" alt="Profile" className="cursor-pointer" />
-            <img src="/shop.svg" alt="Shop" className="cursor-pointer" />
-          </div>
-        </div>
-      </nav>
-      <div className="relative text-white">
-        <div className="absolute flex h-full w-full text-white">
-          <img
-            src={logoImage}
-            alt="Logo"
-            className={`h-full object-cover cursor-pointer ${
-              secondaryImage ? "w-1/2" : "w-full"
-            }`}
-            onClick={() => handleImageClick("Logo")}
-          />
-          {secondaryImage && ( // Only render the second image if it exists
-            <img
-              src={secondaryImage || "default2.png"} // Fallback to default image if secondaryImage is null
-              alt="Secondary Image"
-              className="h-full w-1/2 object-cover"
+    <div className="min-h-screen flex overflow-hidden relative items-center justify-center bg-[#141414]">
+      <div className="back_noise"></div>
+      <div className="shape shape-1"></div>
+      <div className="shape shape-2"></div>
+      <div className="bg-white z-[5] p-10 rounded-lg shadow-lg w-full max-w-[30rem]">
+        <img className="mb-10" src="/logo.svg" alt="" />
+        <h1 className="text-2xl font-semibold mb-1 text-neutral-800">Log in</h1>
+        <p className="text-sm mb-6 text-neutral-500">
+          Continue to Shopify account
+        </p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label htmlFor="email" className="block text-sm text-gray-800">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-1 block w-full px-3 py-2 border border-[#303030] rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
             />
-          )}
-        </div>
-        <div
-          className="h-full w-full absolute z-2 bg-black"
-          style={{ opacity }}
-        ></div>
-        <div
-          className={`flex relative flex-col z-2 p-10 ${sizeToHeight[height]} ${position}`}
-        >
-          <div className={`p-8 ${textAlign} ${isChecked ? "bg-sky-950" : ""}`}>
-            <h1
-              className={`hover:outline outline-[3px] outline-blue-500 mb-10 text-center ${titleSize} font-semibold cursor-pointer`}
-              onClick={() => handleEditClick("Title")}
+          </div>
+          <div>
+            <button
+              type="submit"
+              className="w-full bg-[#303030] border border-gray-500 outline outline-[#303030] outline-[0.3px] text-white px-4 py-2 rounded-md shadow-sm hover:bg-neutral-900 focus:outline-none"
             >
-              {title || "Loading Title..."}
-            </h1>
+              Continue with email
+            </button>
             <a
-              className={`hover:outline outline-[3px] outline-blue-500 border py-2 px-6 cursor-pointer ${buttonSize}`}
-              href=""
-              onClick={(event) => {
-                event.preventDefault();
-                handleEditClick("Button");
-              }}
+              type="submit"
+              className="w-full cursor-pointer mt-2 px-4 flex gap-2 justify-center text-sm py-[10px] rounded-md hover:bg-neutral-100 focus:outline-none"
+              onClick={handleRedirect}
             >
-              {sublink || "Loading Button..."}
+              <span>
+                <img src="key.svg" alt="" />
+              </span>
+              Sign in with passkey
             </a>
           </div>
+        </form>
+        <div className="mt-3">
+          <p className="text-center flex justify-center items-center gap-3 font-light text-xm text-neutral-500">
+            <span className="h-[1px] bg-neutral-200 w-[35%]"></span>
+            or
+            <span className="h-[1px] bg-neutral-200 w-[35%]"></span>
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-3">
+            <button
+              className="flex items-center justify-center w-full bg-neutral-100 text-white p-4 rounded-md hover:bg-neutral-200"
+              onClick={handleRedirect}
+            >
+              <img src="/apple.svg" alt="Apple" className="h-5 w-5 mr-2" />
+            </button>
+            <button
+              className="flex items-center justify-center w-full bg-neutral-100 text-white p-4 rounded-md hover:bg-neutral-200"
+              onClick={handleRedirect}
+            >
+              <img
+                src="/facebook.svg"
+                alt="Facebook"
+                className="h-5 w-5 mr-2"
+              />
+            </button>
+            <button
+              className="flex items-center justify-center w-full bg-neutral-100 text-white p-4 rounded-md hover:bg-neutral-200"
+              onClick={handleRedirect}
+            >
+              <img src="/google.svg" alt="Google" className="h-5 w-5 mr-2" />
+            </button>
+          </div>
+        </div>
+        <p className="my-8 text-xs font-light">
+          New to Shopify?
+          <a
+            href="#"
+            className="ml-2 text-blue-500 font-semibold hover:underline"
+          >
+            Get started →
+          </a>
+        </p>
+        <div className="flex gap-4">
+          <p className="text-neutral-500 font-light text-xs hover:underline cursor-pointer">
+            Help
+          </p>
+          <p className="text-neutral-500 font-light text-xs hover:underline cursor-pointer">
+            privacy
+          </p>
+          <p className="text-neutral-500 font-light text-xs hover:underline cursor-pointer">
+            Terms
+          </p>
         </div>
       </div>
-      <footer className="bg-white py-10 rounded-b-lg">
-        <div className="flex text-lg gap-6 flex-col items-center border-b pb-12">
-          <p>Subsribe to our emails</p>
-          <form className="relative w-[300px]">
-            <button className="absolute text-neutral-500 inset-y-0 right-3 flex items-center">
-              →
-            </button>
-            <input
-              type="text"
-              placeholder="Email"
-              className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-4 hover:outline outline-1"
-            />
-          </form>
-        </div>
-        <div className="flex gap-1 px-12 mt-14">
-          <p className="text-xs opacity-60">© 2024,</p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
-            My Store
-          </p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
-            Powered by Shopify
-          </p>
-          <p className="text-xs mx-2 opacity-60">.</p>
-          <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
-            Powered by Shopify
-          </p>
-        </div>
-      </footer>
-    </OtherLayout>
+    </div>
   );
 }

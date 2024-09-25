@@ -10,12 +10,14 @@ interface Section {
   content: string;
 }
 interface OtherLayoutProps {
-  isChecked: boolean; // Add isChecked prop
+  isChecked: boolean;
   setIsChecked: React.Dispatch<React.SetStateAction<boolean>>;
-  textAlign: string; // Add textAlign prop
+  textAlign: string;
   setTextAlign: React.Dispatch<React.SetStateAction<string>>;
-  position: string; // Add position prop
+  position: string;
   setPosition: React.Dispatch<React.SetStateAction<string>>;
+  handleVisibility: () => void;
+  handleBtnVisibility: () => void;
   height: "small" | "medium" | "large";
   setHeight: React.Dispatch<React.SetStateAction<"small" | "medium" | "large">>;
   children: ReactNode;
@@ -38,6 +40,9 @@ interface OtherLayoutProps {
   onEditImageClick: (label: string) => void;
   opacity: number;
   setOpacity: (value: number) => void;
+  handleNavVisibility: () => void;
+  handleDivVisibility: () => void;
+  handleFooterVisibility: () => void;
 }
 
 const AccordionSection = ({
@@ -45,18 +50,39 @@ const AccordionSection = ({
   isOpen,
   onToggle,
   onEditImageClick,
+  handleNavVisibility,
+  handleDivVisibility,
+  handleFooterVisibility,
   children,
 }: {
   label: string;
   isOpen: boolean;
   onToggle: () => void;
   onEditImageClick?: (label: string) => void;
+  handleNavVisibility: () => void;
+  handleDivVisibility: () => void;
+  handleFooterVisibility: () => void;
   children: ReactNode;
 }) => {
+  const [isToggled, setIsToggled] = useState(false);
+  const [isToggled2, setIsToggled2] = useState(false);
+  const [isToggled3, setIsToggled3] = useState(false);
+
+  const handleToggle = () => {
+    setIsToggled(!isToggled);
+  };
+
+  const handleToggle2 = () => {
+    setIsToggled2(!isToggled2);
+  };
+  const handleToggle3 = () => {
+    setIsToggled3(!isToggled3);
+  };
+
   return (
     <div>
       <div
-        className={`cursor-pointer hover:bg-neutral-200 text-[14px] px-2 gap-2 flex items-center rounded-lg py-1 ${
+        className={`cursor-pointer hover:bg-neutral-200 text-[14px] px-2 gap-2 flex items-center rounded-lg py-1 group/edit group-hover/item:opacity-100 ${
           isOpen ? "bg-neutral-100" : ""
         }`}
         onClick={() => {
@@ -65,7 +91,7 @@ const AccordionSection = ({
         }}
       >
         <span
-          className={`transform text-lg text-neutral-500 transition-transform duration-200 ${
+          className={`transform text-lg text-neutral-500  transition-transform duration-200 ${
             isOpen ? "rotate-90" : ""
           }`}
         >
@@ -81,13 +107,65 @@ const AccordionSection = ({
           <img className="rotate-[180deg]" src="header.svg" alt="imglogo" />
         )}
         <p>{label}</p>
+        {label === "Header" && (
+          <button
+            className="ml-auto relative hover:bg-neutral-300 opacity-0 rounded-lg px-[5px] py-1 opacity-0 group-hover/edit:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleNavVisibility();
+              handleToggle();
+            }}
+          >
+            <img
+              className=""
+              src={isToggled ? "hideye.svg" : "eye.svg"}
+              alt="eye"
+            />
+          </button>
+        )}
+        {label === "Image banner" && (
+          <button
+            className="ml-auto relative hover:bg-neutral-300 opacity-0 rounded-lg px-[5px] py-1 opacity-0 group-hover/edit:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleDivVisibility();
+              handleToggle2();
+            }}
+          >
+            <img
+              className=""
+              src={isToggled2 ? "hideye.svg" : "eye.svg"}
+              alt="eye"
+            />
+          </button>
+        )}
+        {label === "Footer" && (
+          <button
+            className="ml-auto relative hover:bg-neutral-300 opacity-0 rounded-lg px-[5px] py-1 opacity-0 group-hover/edit:opacity-100"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFooterVisibility();
+              handleToggle3();
+            }}
+          >
+            <img
+              className=""
+              src={isToggled3 ? "hideye.svg" : "eye.svg"}
+              alt="eye"
+            />
+          </button>
+        )}
       </div>
+
       {isOpen && <div className="pl-5">{children}</div>}
     </div>
   );
 };
 
 export default function OtherLayout({
+  handleNavVisibility,
+  handleDivVisibility,
+  handleFooterVisibility,
   isChecked,
   setIsChecked,
   height,
@@ -104,12 +182,14 @@ export default function OtherLayout({
   navLinkSize2,
   editImageLabel,
   onEditImageClick,
+  handleVisibility,
+  handleBtnVisibility,
   opacity,
   setOpacity,
   position,
   setPosition,
-  textAlign, // Add textAlign prop
-  setTextAlign, // Add setTextAlign setter prop
+  textAlign,
+  setTextAlign,
 }: OtherLayoutProps) {
   const [selectedContent, setSelectedContent] = useState<string | null>(null);
   const [editContent, setEditContent] = useState<string | null>(null);
@@ -126,6 +206,16 @@ export default function OtherLayout({
     number | null
   >(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isToggled, setIsToggled] = useState(false);
+  const [isToggled2, setIsToggled2] = useState(false);
+
+  const handleToggle = () => {
+    setIsToggled(!isToggled);
+  };
+
+  const handleToggle2 = () => {
+    setIsToggled2(!isToggled2);
+  };
 
   const handleTabClick = (index: number) => {
     setSelectedButtontab(index);
@@ -178,7 +268,7 @@ export default function OtherLayout({
 
   const handleImageUpload = async (
     event: React.ChangeEvent<HTMLInputElement>,
-    column: string // Pass the column name (image1 or image2)
+    column: string
   ) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -187,7 +277,6 @@ export default function OtherLayout({
       reader.onloadend = () => {
         const base64Image = reader.result as string;
 
-        // Update the corresponding image state and localStorage
         if (column === "image1") {
           localStorage.setItem("uploadedLogoImage", base64Image);
           useImageStore.getState().setLogoImage(base64Image);
@@ -198,17 +287,15 @@ export default function OtherLayout({
 
         setSuccessMessage("Image uploaded successfully!");
 
-        // Clear the success message after 5 seconds
         setTimeout(() => {
           setSuccessMessage(null);
         }, 2000);
       };
 
-      reader.readAsDataURL(file); // Read file as base64
+      reader.readAsDataURL(file);
     } else {
       setSuccessMessage("No file selected.");
 
-      // Clear the error message after 5 seconds
       setTimeout(() => {
         setSuccessMessage(null);
       }, 2000);
@@ -217,7 +304,7 @@ export default function OtherLayout({
 
   const handleChangerange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(event.target.value);
-    setOpacity(value); // Update the opacity state in page.tsx
+    setOpacity(value);
   };
 
   const handleHeightChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -230,13 +317,13 @@ export default function OtherLayout({
   };
 
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setIsChecked(event.target.checked); // Update the checkbox state
+    setIsChecked(event.target.checked);
   };
 
   const handlePositionChange = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setPosition(event.target.value); // Update position based on selected value
+    setPosition(event.target.value);
   };
 
   return (
@@ -276,10 +363,13 @@ export default function OtherLayout({
       </div>
       {selectedButtontab === 1 && (
         <aside className="bg-white text-[#303030] w-[300px]">
-          <h2 className="border-b px-4 font-semibold py-4">Home page</h2>
-          <div className="px-4">
-            <h3 className="font-semibold text-[14px] py-4">Header</h3>
+          <h2 className="border-b px-8 font-semibold py-4">Home page</h2>
+          <div className="px-2">
+            <h3 className="font-semibold text-[14px] px-6 pt-3 pb-1">Header</h3>
             <AccordionSection
+              handleNavVisibility={handleNavVisibility}
+              handleDivVisibility={handleDivVisibility}
+              handleFooterVisibility={handleFooterVisibility}
               label="Header"
               isOpen={activeHeaderIndex === 0}
               onToggle={() =>
@@ -309,49 +399,85 @@ export default function OtherLayout({
               <p className="text-[14px] text-blue-600">Add Section</p>
             </div>
           </div>
-          <h3 className="border-t mt-3 px-4 font-semibold text-[14px] py-4">
-            Section
+          <h3 className="border-t mt-3 px-8 font-semibold text-[14px] pt-3 pb-1">
+            Template
           </h3>
-          <div className="px-4">
+          <div className="px-2">
             <AccordionSection
+              handleNavVisibility={handleNavVisibility} // Handler to toggle Nav
+              handleDivVisibility={handleDivVisibility} // Handler to toggle Div
+              handleFooterVisibility={handleFooterVisibility}
               label="Image banner"
-              isOpen={activeIndex === 0} // This determines if the accordion is open
+              isOpen={activeIndex === 0}
               onToggle={() => {
                 if (activeIndex === 0) {
-                  setActiveIndex(null); // Close the accordion
-                  setIsSidebarVisible(false); // Hide the sidebar
+                  setActiveIndex(null);
+                  setIsSidebarVisible(false);
                 } else {
-                  setActiveIndex(0); // Open the accordion
-                  setIsSidebarVisible(true); // Show the sidebar
+                  setActiveIndex(0);
+                  setIsSidebarVisible(true);
                 }
-              }} // Toggle between open and close
-              onEditImageClick={onEditImageClick} // Pass this prop here
+              }}
+              onEditImageClick={onEditImageClick}
             >
               {sections.map((section, index) => (
                 <div
                   key={index}
-                  className="cursor-pointer hover:bg-neutral-100 text-[14px] flex items-center px-4 py-1 mt-2 rounded-lg bg-white"
+                  className="group/edit group-hover/item:opacity-100 cursor-pointer hover:bg-neutral-100 text-[14px] flex items-center px-4 py-1 mt-2 rounded-lg bg-white"
                   onClick={() => {
-                    // Ensure the sidebar opens when this div is clicked
                     setIsSidebarVisible(true);
-                    onEditClick(section.label); // Trigger any other functionality you need
+                    onEditClick(section.label);
                   }}
                 >
                   {section.label === "Title" && (
-                    <img
-                      src="text.svg"
-                      alt="Text icon"
-                      className="mr-2 inline"
-                    />
+                    <>
+                      <img
+                        src="text.svg"
+                        alt="Text icon"
+                        className="mr-2 inline"
+                      />
+                      {section.label}
+                      <button
+                        className="ml-auto relative hover:bg-neutral-200 rounded-lg px-[5px] py-1 opacity-0 group-hover/edit:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleVisibility();
+                          handleToggle();
+                        }}
+                      >
+                        <img
+                          className=""
+                          src={isToggled ? "hideye.svg" : "eye.svg"}
+                          alt="eye"
+                        />
+                      </button>
+                    </>
                   )}
+
                   {section.label === "Button" && (
-                    <img
-                      src="btn.svg"
-                      alt="Text icon"
-                      className="mr-2 inline"
-                    />
+                    <>
+                      <img
+                        src="btn.svg"
+                        alt="Button icon"
+                        className="mr-2 inline"
+                      />
+                      {section.label}
+                      <button
+                        className="ml-auto relative hover:bg-neutral-200 rounded-lg px-[5px] py-1 opacity-0 group-hover/edit:opacity-100"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleBtnVisibility();
+                          handleToggle2();
+                        }}
+                      >
+                        <img
+                          className=""
+                          src={isToggled2 ? "hideye.svg" : "eye.svg"}
+                          alt="eye"
+                        />
+                      </button>
+                    </>
                   )}
-                  {section.label}
                 </div>
               ))}
             </AccordionSection>
@@ -360,11 +486,18 @@ export default function OtherLayout({
               <p className="text-[14px] text-blue-600">Add Section</p>
             </div>
           </div>
-          <h3 className="border-t mt-3 px-4 font-semibold text-[14px] py-4">
+          <h3 className="border-t mt-3 px-8 font-semibold text-[14px] pb-1 pt-3">
             Footer
           </h3>
-          <div className="px-4">
+          <div className="px-2">
+            <div className="flex items-center px-6 gap-2 hover:bg-neutral-100 py-1 rounded-lg cursor-pointer">
+              <img src="/add.svg" alt="svgimgs" />
+              <p className="text-[14px] text-blue-600">Add Section</p>
+            </div>
             <AccordionSection
+              handleNavVisibility={handleNavVisibility} // Handler to toggle Nav
+              handleDivVisibility={handleDivVisibility} // Handler to toggle Div
+              handleFooterVisibility={handleFooterVisibility}
               label="Footer"
               isOpen={secondAccordionIndex === 1}
               onToggle={() =>
