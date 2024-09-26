@@ -50,7 +50,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className="h-screen flex flex-col">
-        {pathname !== "/" && (
+        {pathname !== "/" && pathname !== "/testo" && (
           <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
             <div className="flex items-center justify-center">
               <div className="w-[10%] text-center">
