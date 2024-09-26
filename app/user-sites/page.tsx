@@ -77,7 +77,7 @@ export default function LoginPage() {
                   </div>
                 </div>
               </div>
-              <div className="border rounded-lg w-fit py-1 w-[290px] text-center flex items-center justify-center flex-col gap-3">
+              <div className="border rounded-lg py-1 w-[290px] text-center flex items-center justify-center flex-col gap-3">
                 <button className="border rounded-full shadow h-[55px] w-[55px] flex items-center justify-center hover:bg-neutral-800 hover:text-white">
                   <span className="text-2xl mt-[-2px]">+</span>
                 </button>
