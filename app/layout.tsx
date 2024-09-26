@@ -65,14 +65,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                   Home Page
                 </a>
               </div>
-              <div className="w-[10%] text-right">
-                <button
-                  //onClick={handleSave}
-                  className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
-                >
-                  Save
-                </button>
-              </div>
+              {pathname === "/landing-page" && (
+                <div className="w-[10%] text-right">
+                  <button
+                    //onClick={handleSave}
+                    className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
+                  >
+                    Save
+                  </button>
+                </div>
+              )}
             </div>
           </nav>
         )}

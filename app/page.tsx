@@ -12,11 +12,11 @@ export default function LoginPage() {
     e.preventDefault();
     console.log("Email:", email);
     console.log("Password:", password);
-    router.push("/landing-page");
+    router.push("/user-sites");
   };
 
   const handleRedirect = () => {
-    router.push("/landing-page");
+    router.push("/user-sites");
   };
 
   return (
