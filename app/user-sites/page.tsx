@@ -34,9 +34,18 @@ export default function LoginPage() {
           </div>
         </div>
         <div className="container mx-auto py-20 max-w-[1000px]">
-          <h1 className="text-2xl font-semibold mb-1 text-neutral-800">
-            Themes
-          </h1>
+          <div className="flex justify-between items-center">
+            <h1 className="text-2xl font-semibold mb-1 text-neutral-800">
+              Themes
+            </h1>
+            <div
+              className="flex gap-2 bg-neutral-200 items-center h-fit px-2 py-1 rounded-lg hover:bg-neutral-300 cursor-pointer"
+              onClick={handleRedirect}
+            >
+              <img className="w-[20px] h-[20px]" src="eye.svg" alt="" />
+              <p className="text-sm">View your store</p>
+            </div>
+          </div>
           <div className="px-4 py-6 mt-3 bg-white border rounded-lg shadow-sm h-full">
             <div className="flex items-center gap-4 mb-8">
               <div className="p-4 w-fit bg-[#d5ebff] rounded-lg">
