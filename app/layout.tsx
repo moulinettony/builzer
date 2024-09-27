@@ -3,7 +3,6 @@
 import { ReactNode, useState } from "react";
 import "./globals.css";
 import { usePathname } from "next/navigation";
-import Head from "next/head";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   const [showPopup, setShowPopup] = useState<boolean>(false);
@@ -50,13 +49,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="en">
-      <Head>
-        <title>Browse Our Latest Products - Shop the Newest Arrivals</title>
-        <meta
-          name="description"
-          content="Explore our latest products and shop the newest arrivals in our store. Find the perfect items for your needs today."
-        />
-      </Head>
+    <head>
+      <title>Browse Our Latest Products - Shop the Newest Arrivals</title>
+      <meta
+        name="description"
+        content="Explore our latest products and shop the newest arrivals in our store. Find the perfect items for your needs today."
+      />
+    </head>
       <body className="h-screen flex flex-col">
         {pathname !== "/" && pathname !== "/testo" && (
           <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
