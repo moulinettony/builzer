@@ -32,44 +32,40 @@ export default function StandalonePage() {
   return (
     <div>
       {loading && <LoadingSpinner />}
-        <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
-          <div className="flex items-center justify-center">
-            <div className="w-[20%] text-center">
-              <img src="/wow.svg" alt="Logo" className="cursor-pointer" />
-            </div>
-            <div className="w-[70%] flex gap-6">
-              <a
-                className={` ${navLinkSize1}`}
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleEditClick("Home");
-                }}
-              >
-                {navLink1}
-              </a>
-              <a
-                className={` ${navLinkSize2}`}
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleEditClick("Default");
-                }}
-              >
-                {navLink2}
-              </a>
-            </div>
-            <div className="w-[10%] flex gap-5 text-right">
-              <img src="/search.svg" alt="Search" className="cursor-pointer" />
-              <img
-                src="/profile.svg"
-                alt="Profile"
-                className="cursor-pointer"
-              />
-              <img src="/shop.svg" alt="Shop" className="cursor-pointer" />
-            </div>
+      <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
+        <div className="flex items-center justify-center">
+          <div className="w-[20%] text-center">
+            <img src="/wow.svg" alt="Logo" className="cursor-pointer" />
           </div>
-        </nav>
+          <div className="w-[70%] flex gap-6">
+            <a
+              className={` ${navLinkSize1}`}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleEditClick("Home");
+              }}
+            >
+              {navLink1}
+            </a>
+            <a
+              className={` ${navLinkSize2}`}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handleEditClick("Default");
+              }}
+            >
+              {navLink2}
+            </a>
+          </div>
+          <div className="w-[10%] flex gap-5 text-right">
+            <img src="/search.svg" alt="Search" className="cursor-pointer" />
+            <img src="/profile.svg" alt="Profile" className="cursor-pointer" />
+            <img src="/shop.svg" alt="Shop" className="cursor-pointer" />
+          </div>
+        </div>
+      </nav>
 
       <div className="relative text-white h-[60vh]">
         <div className="absolute flex h-full w-full text-white">
@@ -113,14 +109,14 @@ export default function StandalonePage() {
         <div className="flex text-lg gap-6 flex-col items-center border-b pb-12">
           <p>Subsribe to our emails</p>
           <form className="relative w-[300px]">
-            <button className="absolute text-neutral-500 inset-y-0 right-3 flex items-center">
-              →
-            </button>
             <input
               type="text"
               placeholder="Email"
-              className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-4 hover:outline outline-1"
+              className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-10 hover:outline outline-1" // Adjusted padding on the right
             />
+            <button className="absolute text-neutral-500 inset-y-0 right-0 flex items-center justify-center w-12 h-12">
+              →
+            </button>
           </form>
         </div>
         <div className="flex gap-1 px-12 mt-14">
