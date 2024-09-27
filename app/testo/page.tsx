@@ -4,6 +4,7 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useImageStore } from "../../components/useImageStore";
 import "./../globals.css";
 import { useState } from "react";
+import Head from "next/head";
 
 export default function StandalonePage() {
   const [title, setTitle] = useState<string>("Browse our latest products");
@@ -31,6 +32,13 @@ export default function StandalonePage() {
 
   return (
     <div>
+      <Head>
+        <title>Browse Our Latest Products - Shop the Newest Arrivals</title>
+        <meta
+          name="description"
+          content="Explore our latest products and shop the newest arrivals in our store. Find the perfect items for your needs today."
+        />
+      </Head>
       {loading && <LoadingSpinner />}
       <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
         <div className="flex items-center justify-center">
