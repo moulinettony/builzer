@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <div className="w-[10%] text-center">
                 <img src="/logo.svg" alt="" />
               </div>
-              <div className="w-[70%] flex items-center justify-center gap-6">
+              <div className="w-[80%] flex items-center justify-center gap-6">
                 <a className="font-semibold text-sm" href="">
                   Default
                 </a>
@@ -73,7 +73,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </a>
               </div>
               {pathname === "/landing-page" && (
-                <div className="w-[10%] text-right flex justify-center">
+                <div className="w-[10%] text-right flex justify-end">
                   <a
                     href="/new-page"
                     target="_blank"

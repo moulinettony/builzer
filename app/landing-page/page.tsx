@@ -215,7 +215,7 @@ export default function HomePage() {
       handleFooterVisibility={handleFooterVisibility}
     >
       <button
-        className="bg-neutral-800 hover:bg-neutral-900 text-white py-2 leading-[1] px-4 rounded-lg absolute z-[55] top-4 right-12 text-sm"
+        className="bg-neutral-800 hover:bg-neutral-900 text-white py-[9px] leading-[1] px-4 rounded-lg absolute z-[55] top-4 right-36 text-sm"
         onClick={handleSave} // Trigger save on click
       >
         Save
