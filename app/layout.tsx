@@ -49,21 +49,21 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 
   return (
     <html lang="en">
-    <head>
-      <title>Browse Our Latest Products - Shop the Newest Arrivals</title>
-      <meta
-        name="description"
-        content="Explore our latest products and shop the newest arrivals in our store. Find the perfect items for your needs today."
-      />
-    </head>
+      <head>
+        <title>Browse Our Latest Products - Shop the Newest Arrivals</title>
+        <meta
+          name="description"
+          content="Explore our latest products and shop the newest arrivals in our store. Find the perfect items for your needs today."
+        />
+      </head>
       <body className="h-screen flex flex-col">
-        {pathname !== "/" && pathname !== "/testo" && (
+        {pathname === "/landing-page" && (
           <nav className="bg-white px-12 text-[#303030] py-4 shadow z-[9]">
             <div className="flex items-center justify-center">
               <div className="w-[10%] text-center">
                 <img src="/logo.svg" alt="" />
               </div>
-              <div className="w-[80%] flex items-center justify-center gap-6">
+              <div className="w-[70%] flex items-center justify-center gap-6">
                 <a className="font-semibold text-sm" href="">
                   Default
                 </a>
@@ -73,10 +73,19 @@ export default function RootLayout({ children }: { children: ReactNode }) {
                 </a>
               </div>
               {pathname === "/landing-page" && (
-                <div className="w-[10%] text-right">
+                <div className="w-[10%] text-right flex justify-center">
+                  <a
+                    href="/new-page"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex bg-neutral-200 hover:bg-neutral-300 font-semibold py-2 leading-[1] px-4 rounded-full text-sm"
+                  >
+                    <img className="mr-[5px] ml-[-5px]" src="eye.svg" alt="" />
+                    View
+                  </a>
                   <button
                     //onClick={handleSave}
-                    className="bg-neutral-800 text-white py-2 leading-[1] px-4 rounded-lg"
+                    className="bg-neutral-800 hidden text-white py-2 leading-[1] px-4 rounded-lg"
                   >
                     Save
                   </button>

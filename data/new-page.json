@@ -1,0 +1,15 @@
+{
+  "title": "Browse our latest products",
+  "sublink": "Shop all",
+  "titleSize": "text-6xl",
+  "buttonSize": "text-xl",
+  "navLink1": "Home",
+  "navLink2": "Default",
+  "logoImage": "/Frame.svg",
+  "secondaryImage": null,
+  "opacity": 0.4,
+  "height": "medium",
+  "position": "items-center justify-center",
+  "textAlign": "text-center",
+  "isChecked": false
+}

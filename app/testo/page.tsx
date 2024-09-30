@@ -4,7 +4,6 @@ import LoadingSpinner from "../../components/LoadingSpinner";
 import { useImageStore } from "../../components/useImageStore";
 import "./../globals.css";
 import { useState } from "react";
-import Head from 'next/head';
 
 
 export default function StandalonePage() {
@@ -32,11 +31,6 @@ export default function StandalonePage() {
   };
 
   return (
-    <>
-      <Head>
-        <title>Standalone Page - Browse the Best Products</title>
-        <meta name="description" content="Discover top-quality products on our standalone page." />
-      </Head>
     <div>
       {loading && <LoadingSpinner />}
       <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
@@ -141,6 +135,5 @@ export default function StandalonePage() {
         </div>
       </footer>
     </div>
-    </>
   );
 }

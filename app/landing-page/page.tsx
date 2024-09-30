@@ -1,4 +1,4 @@
-// app/landing-page.tsx
+// app/landing-page/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import OtherLayout from "../../components/dashboard";
@@ -37,6 +37,8 @@ export default function HomePage() {
   const [isNavVisible, setIsNavVisible] = useState(true);
   const [isDivVisible, setIsDivVisible] = useState(true);
   const [isFooterVisible, setIsFooterVisible] = useState(true);
+  const [showPopup, setShowPopup] = useState<boolean>(false);
+  const [fadeOut, setFadeOut] = useState<boolean>(false);
 
   const handleNavVisibility = () => {
     setIsNavVisible(!isNavVisible);
@@ -121,28 +123,45 @@ export default function HomePage() {
   };
 
   const handleSave = async () => {
-    const data = { title, sublink, titleSize, buttonSize };
+    const data = {
+      title,
+      sublink,
+      titleSize,
+      buttonSize,
+      navLink1,
+      navLink2,
+      logoImage,
+      secondaryImage,
+      opacity,
+      height,
+      position,
+      textAlign,
+      isChecked,
+    };
 
-    console.log("Data to save:", data); // Debug log
+    console.log("Data to save:", data);
 
     try {
-      const res = await fetch("/api/saveContent", {
+      const res = await fetch("/api/savePage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
       if (res.ok) {
-        console.log("Content saved successfully");
-        setInitialTitle(title);
-        setInitialSublink(sublink);
-        setIsEdited(false);
-      } else {
-        const errorData = await res.json();
-        console.error("Failed to save content:", errorData.message); // Display detailed error message
-      }
+        console.log("Content saved:", data);
+        setShowPopup(true);
+        setFadeOut(false);
+
+        setTimeout(() => {
+          setFadeOut(true); // Start fade out effect
+          setTimeout(() => {
+            setShowPopup(false);
+          }, 700);
+        }, 1500);
+      } else console.error("Failed to save data");
     } catch (error) {
-      console.error("Error saving content:", error);
+      console.error("Error saving data:", error);
     }
   };
 
@@ -195,10 +214,28 @@ export default function HomePage() {
       handleDivVisibility={handleDivVisibility}
       handleFooterVisibility={handleFooterVisibility}
     >
+      <button
+        className="bg-neutral-800 hover:bg-neutral-900 text-white py-2 leading-[1] px-4 rounded-lg absolute z-[55] top-4 right-12 text-sm"
+        onClick={handleSave} // Trigger save on click
+      >
+        Save
+      </button>
+      {showPopup && (
+        <div
+          className={`fixed z-[9] translate-x-[-50%] left-[50%] bg-green-500 text-white py-2 px-6 rounded transition-opacity duration-500 ease-in-out ${
+            fadeOut ? "opacity-0 top-[-20px]" : "opacity-100 top-5"
+          }`}
+          style={{
+            transition: "all .7s ease-in-out", // Adding inline style for transition
+          }}
+        >
+          Saved successfully!
+        </div>
+      )}
       {loading && <LoadingSpinner />}
       {isNavVisible && (
         <nav className="bg-white px-12 rounded-t-lg text-[#303030] py-4 shadow z-[9]">
-          <div className="flex items-center justify-center">
+          <div className="max-w-[1300px] mx-auto flex items-center justify-center">
             <div className="w-[20%] text-center">
               <img src="/wow.svg" alt="Logo" className="cursor-pointer" />
             </div>
@@ -238,10 +275,7 @@ export default function HomePage() {
       )}
       {isDivVisible && (
         <div className="relative text-white">
-          <div
-            className="absolute flex h-full w-full text-white"
-           
-          >
+          <div className="absolute flex h-full w-full text-white">
             <img
               src={logoImage}
               alt="Logo"
@@ -262,7 +296,8 @@ export default function HomePage() {
             style={{ opacity }}
           ></div>
           <div
-            className={`hover:outline outline-[2px] outline-blue-500 flex relative flex-col z-2 p-10 cursor-pointer ${sizeToHeight[height]} ${position}`} onClick={() => handleImageClick("Logo")}
+            className={`hover:outline outline-[2px] outline-blue-500 flex relative flex-col z-2 p-10 cursor-pointer ${sizeToHeight[height]} ${position}`}
+            onClick={() => handleImageClick("Logo")}
           >
             <div
               className={`p-8 ${textAlign} ${isChecked ? "bg-sky-950" : ""}`}
@@ -271,7 +306,7 @@ export default function HomePage() {
                 <h1
                   className={`hover:outline outline-[3px] outline-blue-500 mb-10 text-center ${titleSize} font-semibold cursor-pointer`}
                   onClick={(event) => {
-                    event.stopPropagation();  // Prevent the event from bubbling
+                    event.stopPropagation(); // Prevent the event from bubbling
                     handleEditClick("Title");
                   }}
                 >
@@ -284,7 +319,7 @@ export default function HomePage() {
                   href=""
                   onClick={(event) => {
                     event.preventDefault();
-                    event.stopPropagation();  // Prevent the event from bubbling
+                    event.stopPropagation(); // Prevent the event from bubbling
                     handleEditClick("Button");
                   }}
                 >
@@ -300,17 +335,17 @@ export default function HomePage() {
           <div className="flex text-lg gap-6 flex-col items-center border-b pb-12">
             <p>Subsribe to our emails</p>
             <form className="relative w-[300px]">
-              <button className="absolute text-neutral-500 inset-y-0 right-3 flex items-center">
-                →
-              </button>
               <input
                 type="text"
                 placeholder="Email"
-                className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-4 hover:outline outline-1"
+                className="text-sm border w-full text-neutral-700 border-neutral-600 py-3 pl-4 pr-10 hover:outline outline-1" // Adjusted padding on the right
               />
+              <button className="absolute text-neutral-500 inset-y-0 right-0 flex items-center justify-center w-12 h-12">
+                →
+              </button>
             </form>
           </div>
-          <div className="flex gap-1 px-12 mt-14">
+          <div className="max-w-[1300px] mx-auto flex gap-1 px-12 mt-14">
             <p className="text-xs opacity-60">© 2024,</p>
             <p className="text-xs opacity-60 hover:underline hover:opacity-100 cursor-pointer">
               My Store
