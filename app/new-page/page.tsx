@@ -1,29 +1,49 @@
-// app/new-page/page.tsx
-import fs from "fs";
-import path from "path";
+"use client";
+import LoadingSpinner from "../../components/LoadingSpinner";
+import { useEffect, useState } from "react";
 
-export default async function NewPage() {
-  // Load the saved data from the JSON file
-  const filePath = path.join(process.cwd(), "data", "new-page.json");
-  const fileContent = fs.readFileSync(filePath, "utf8");
-  const data = JSON.parse(fileContent);
+interface PageData {
+  title: string;
+  sublink: string;
+  titleSize: string;
+  buttonSize: string;
+  navLink1: string;
+  navLink2: string;
+  logoImage: string;
+  secondaryImage?: string;  // Optional
+  opacity: number;
+  height: "small" | "medium" | "large";
+  position: string;
+  navLinkSize1: string;
+  navLinkSize2: string;
+  textAlign: string;
+  isChecked: boolean;
+}
 
-  // Define sizeToHeight mapping for height values
+export default function NewPage() {
+  const [data, setData] = useState<PageData | null>(null);
+
+  useEffect(() => {
+    // Load data from localStorage
+    const savedData = localStorage.getItem("savedPageData");
+
+    if (savedData) {
+      setData(JSON.parse(savedData));
+    } else {
+      console.error("No saved data found in localStorage");
+    }
+  }, []);
+
+  // Return null if data hasn't been loaded yet
+  if (!data) return <LoadingSpinner />;
+
   const sizeToHeight: { [key in "small" | "medium" | "large"]: string } = {
     small: "h-[40vh]",
     medium: "h-[60vh]",
     large: "h-[80vh]",
   };
 
-  // Safely check that data.height is one of the valid keys ("small", "medium", or "large")
-  const validHeights = ["small", "medium", "large"] as const; // Ensure it's typed correctly as a tuple of constant values
-
-  // Use type narrowing to confirm it's one of the allowed values
-  const height: "small" | "medium" | "large" = validHeights.includes(
-    data.height
-  )
-    ? data.height
-    : "medium";
+  const height: "small" | "medium" | "large" = data.height || "medium";
 
   return (
     <>

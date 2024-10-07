@@ -122,7 +122,7 @@ export default function HomePage() {
     setEditImageLabel(null);
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     const data = {
       title,
       sublink,
@@ -138,31 +138,23 @@ export default function HomePage() {
       textAlign,
       isChecked,
     };
+  
+    // Save data in localStorage
+    localStorage.setItem("savedPageData", JSON.stringify(data));
 
-    console.log("Data to save:", data);
-
-    try {
-      const res = await fetch("/api/savePage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
-      });
-
-      if (res.ok) {
-        console.log("Content saved:", data);
-        setShowPopup(true);
-        setFadeOut(false);
-
+    setTimeout(() => {
+      setShowPopup(true);
+      setFadeOut(false);
+  
+      setTimeout(() => {
+        setFadeOut(true); // Start fade out effect
         setTimeout(() => {
-          setFadeOut(true); // Start fade out effect
-          setTimeout(() => {
-            setShowPopup(false);
-          }, 700);
-        }, 1500);
-      } else console.error("Failed to save data");
-    } catch (error) {
-      console.error("Error saving data:", error);
-    }
+          setShowPopup(false);
+        }, 700); // Time for the fade-out effect
+      }, 1500); // Time the success message remains visible before fade out
+    }, 1000);
+  
+    console.log("Data saved in localStorage:", data);
   };
 
   const handleEditClick = (label: string) => {
